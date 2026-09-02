@@ -1,0 +1,10 @@
+quotation_id,document_name,document_type,location,district,date,total_amount_inr,area_sqft,rate_per_sqft,line_item_count,cost_status,actual_final_cost,validation_eligible,import_id
+QUO_f93c6a8e,VINITHA Residence BOQ,BOQ,"Chennai, Tamil Nadu",Chennai,2024-12-13,14945477.81,,,8,QUOTED,,False,IMPORT_20260830_193328
+QUO_6ac53244,SEKARAN Detailed Estimate,CONTRACTOR_ESTIMATE,"Ariyakudi, Ramanathapuram, Tamil Nadu",Ramanathapuram,,1300000.0,,,12,QUOTED,,False,IMPORT_20260830_193328
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,CONTRACTOR_ESTIMATE,"Puzhal, Chennai, Tamil Nadu",Chennai,,1620000.0,810.0,2000.0,8,QUOTED,,False,IMPORT_20260830_193328
+QUO_f27bbb4e,Dr. Radhakrishnan BOQ,BOQ,"Ayanbakkam/Chennai, Tamil Nadu",Chennai,,,,,2,QUOTED,,False,IMPORT_20260830_193328
+QUO_0ade85e7,Coimbatore Residential Estimate,CONTRACTOR_ESTIMATE,"Coimbatore, Tamil Nadu",Coimbatore,2019-09-04,,,,5,QUOTED,,False,IMPORT_20260830_193328
+QUO_a5090ae7,Varghese Residence Detailed Estimate,CONTRACTOR_ESTIMATE,"Chengannur, Kerala",Kerala,,5069731.47,,,8,QUOTED,,False,IMPORT_20260830_193328
+QUO_768f8387,Susamma Jose BOQ,BOQ,"Nettor/Kottayam, Kerala",Kottayam,2019-04-25,8521225.0,,,8,QUOTED,,False,IMPORT_20260830_193328
+QUO_7939a2e7,Harisankar Detailed Estimate,CONTRACTOR_ESTIMATE,"Kottayam, Kerala",Kottayam,,,,,2,QUOTED,,False,IMPORT_20260830_193328
+QUO_94773217,Aswanth Krishna Detailed Estimate,CONTRACTOR_ESTIMATE,"Kanjirappally, Kottayam, Kerala",Kottayam,,,,,1,QUOTED,,False,IMPORT_20260830_193328

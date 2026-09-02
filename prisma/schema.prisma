@@ -1,0 +1,1080 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Users ───────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("engineer") // "engineer" | "homeowner"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Engineer relationships
+  engineeredProjects   Project[]  @relation("EngineerProjects")
+  inspections          Inspection[]
+  aiAnalyses           AiAnalysis[]
+
+  // Homeowner relationships
+  homeownerProjects    Project[]  @relation("HomeownerProjects")
+
+  // Photo uploads
+  uploadedPhotos       Photo[]
+
+  // AI Predictions
+  reviewedPredictions  AiPrediction[]
+
+  // Issues & Evidence
+  reportedIssues       Issue[]
+  evidenceUploads      Evidence[]
+  issueTimelineEvents  IssueTimelineEvent[]
+  projectEvidences     ProjectEvidence[]
+
+  // Workforce
+  assignedWorkers      Worker[]  @relation("WorkerAssignments")
+  performedCheckIns    WorkerCheckIn[]
+
+  // Property evaluations (buyer journey)
+  properties           Property[]
+  propertyInspections  PropertyInspection[]
+  propertyUploadedPhotos PropertyPhoto[]
+  propertyDocuments    PropertyDocument[]
+  propertyAnalyses     PropertyAiAnalysis[]
+
+  // Business validation
+  customerInterviews   CustomerInterview[]
+  pricingExperiments   PricingExperiment[]
+  productFeedback      ProductFeedback[]
+  customerDiscoveries  CustomerDiscovery[]
+  valueExperiments     ValueExperiment[]
+
+  // Pilot & analytics
+  createdPilots        Pilot[]
+  pilotFeedback        PilotFeedback[]
+  productEvents        ProductEvent[]
+
+  // Command Center actions
+  createdActionItems   ActionItem[]
+  actionFeedback       ActionFeedback[]
+
+  // Project Truth
+  createdBudgetEvents  BudgetEvent[]
+  createdChangeRequests ChangeRequest[]
+  createdSiteContexts  SiteContext[]
+
+  // Quotation Intelligence
+  createdQuotations    Quotation[]
+
+  // Payment Requests
+  createdPaymentRequests PaymentRequest[]
+
+  // Progress Observations
+  createdProgressObs  ProgressObservation[]  @relation("CreatedProgressObs")
+  verifiedProgressObs ProgressObservation[]  @relation("VerifiedProgressObs")
+}
+
+// ─── Projects / Sites ────────────────────────────────────────────────────────
+
+model Project {
+  id              String    @id @default(cuid())
+  name            String
+  address         String
+  city            String?
+  district        String?
+  state           String?
+  pincode         String?
+  latitude        Float?
+  longitude       Float?
+  formattedAddress String?
+  constructionType String?   // "house" | "villa" | "apartment" | "renovation"
+  builtArea       Float?    // approximate built-up area in sq ft/m
+  engineerId      String
+  homeownerId     String?
+  homeownerName   String?   // denormalized for quick display
+  currentStage    String?   // "planning" | "foundation" | "structure" | "brickwork" | "roofing" | "electrical_plumbing" | "finishing" | "completed"
+  status          String    @default("normal") // "normal" | "attention" | "review"
+  progress        Int       @default(0)        // 0–100
+  expectedCompletion DateTime?
+  estimatedCost   Float?
+  engineerNotes   String?
+
+  // ─── Pilot Label ──────────────────────────────────────────────────────────
+  isPilot           Boolean  @default(false)
+  pilotId           String?  // e.g. "BUILDME-PILOT-001"
+
+  // ─── Ground-Truth Tracking ────────────────────────────────────────────────
+  trackingStatus    String?  @default("planning") // "planning" | "active" | "completed" | "cancelled"
+  finalCostInr      Float?   // actual final cost (only when trackingStatus = "completed")
+  completionDate    DateTime? // actual completion date
+  validationStatus  String?  @default("unverified") // "unverified" | "user_reported" | "document_supported" | "independently_verified"
+  validationNotes   String?   // notes about how final cost was determined
+  methodologyVersion String?  // version of estimation methodology used
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  engineer        User      @relation("EngineerProjects", fields: [engineerId], references: [id])
+  homeowner       User?     @relation("HomeownerProjects", fields: [homeownerId], references: [id])
+  inspections     Inspection[]
+  photos          Photo[]
+  timelineEvents  TimelineEvent[]
+  alerts          Alert[]
+  aiAnalyses      AiAnalysis[]
+  aiPredictions   AiPrediction[]
+  issues          Issue[]
+  costEstimates   CostEstimate[]
+  workers         Worker[]
+  pilots          Pilot[]
+  productEvents   ProductEvent[]
+  riskPredictions RiskPrediction[]
+  actionItems     ActionItem[]
+  budgetEvents    BudgetEvent[]
+  changeRequests  ChangeRequest[]
+  siteContexts    SiteContext[]
+  quotations     Quotation[]
+  evidences      ProjectEvidence[]
+  paymentRequests PaymentRequest[]
+  progressObs    ProgressObservation[]
+}
+
+// ─── Inspections ─────────────────────────────────────────────────────────────
+
+model Inspection {
+  id              String    @id @default(cuid())
+  projectId       String
+  engineerId      String
+  inspectionDate  DateTime  @default(now())
+  stage           String?   // construction stage at time of inspection
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  engineer        User      @relation(fields: [engineerId], references: [id])
+  photos          Photo[]
+  previousAnalyses AiAnalysis[] @relation("PreviousInspectionAnalyses")
+  currentAnalyses  AiAnalysis[] @relation("CurrentInspectionAnalyses")
+}
+
+// ─── Photos ──────────────────────────────────────────────────────────────────
+
+model Photo {
+  id              String    @id @default(cuid())
+  projectId       String
+  inspectionId    String?
+  uploadedBy      String
+  fileUrl         String    // storage reference / URL
+  fileName        String?
+  latitude        Float?
+  longitude       Float?
+  timestamp       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  inspection      Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+  uploader        User       @relation(fields: [uploadedBy], references: [id])
+  evidenceItems   Evidence[]
+}
+
+// ─── Issues & Evidence ──────────────────────────────────────────────────────
+
+model Issue {
+  id              String    @id @default(cuid())
+  projectId       String
+  reportedById    String
+  title           String
+  description     String?
+  category        String    // "structural" | "water" | "electrical" | "plumbing" | "material" | "workmanship" | "delay" | "cost" | "other"
+  severity        String    @default("medium") // "low" | "medium" | "high" | "critical"
+  status          String    @default("open") // "open" | "under_review" | "resolved" | "dismissed"
+  inspectionId    String?   // optional link to inspection
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  resolvedAt      DateTime?
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reportedBy      User      @relation(fields: [reportedById], references: [id])
+  evidence        Evidence[]
+  timelineEvents  IssueTimelineEvent[]
+}
+
+model Evidence {
+  id              String    @id @default(cuid())
+  issueId         String
+  uploadedById    String
+  type            String    // "photo" | "document" | "comment" | "inspection_link" | "note"
+  description     String?
+  photoId         String?   // link to existing Photo model
+  trustLabel      String    @default("self_reported") // "self_reported" | "photo_supported" | "ai_assisted" | "engineer_reviewed"
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  issue           Issue     @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  uploadedBy      User      @relation(fields: [uploadedById], references: [id])
+  photo           Photo?    @relation(fields: [photoId], references: [id], onDelete: SetNull)
+}
+
+model IssueTimelineEvent {
+  id              String    @id @default(cuid())
+  issueId         String
+  action          String    // "created" | "evidence_added" | "status_changed" | "reviewed" | "resolved" | "comment"
+  description     String?
+  performedById  String?
+  previousStatus  String?
+  newStatus       String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  issue           Issue     @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  performedBy     User?     @relation(fields: [performedById], references: [id])
+}
+
+// ─── Timeline Events ─────────────────────────────────────────────────────────
+
+model TimelineEvent {
+  id              String    @id @default(cuid())
+  projectId       String
+  type            String    // "milestone" | "inspection" | "update" | "alert" | "photo"
+  title           String
+  description     String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// ─── Alerts ──────────────────────────────────────────────────────────────────
+
+model Alert {
+  id              String    @id @default(cuid())
+  projectId       String
+  severity        String    @default("info") // "info" | "warning" | "critical"
+  title           String
+  description     String?
+  resolved        Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// ─── Ready-Built Properties (Buyer Journey) ─────────────────────────────────
+
+model Property {
+  id              String    @id @default(cuid())
+  userId          String    // buyer user ID
+  name            String
+  propertyType    String?   // "house" | "villa" | "apartment" | "independent"
+  builtArea       Float?
+  floors          Int?
+  propertyAge     Int?      // approximate age in years
+  constructionYear Int?
+  latitude        Float?
+  longitude       Float?
+  address         String?
+  city            String?
+  district        String?
+  state           String?
+  pincode         String?
+  formattedAddress String?
+  askingPrice     Float?
+  bedrooms        Int?
+  bathrooms       Int?
+  parking         String?   // "yes" | "no" | "covered" | "open"
+  constructionType String?  // if known
+  conditionLevel  String    @default("unknown") // "good" | "moderate" | "poor" | "unknown"
+  conditionScore  Int       @default(0)         // 0–100
+  conditionReasons String  @default("[]")      // JSON array of reasons
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+  inspections     PropertyInspection[]
+  photos          PropertyPhoto[]
+  documents       PropertyDocument[]
+  analyses        PropertyAiAnalysis[]
+  checklist       PropertyChecklist[]
+}
+
+model PropertyInspection {
+  id              String    @id @default(cuid())
+  propertyId      String
+  userId          String
+  inspectionDate  DateTime  @default(now())
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id])
+  photos          PropertyPhoto[]
+}
+
+model PropertyPhoto {
+  id              String    @id @default(cuid())
+  propertyId      String
+  inspectionId    String?
+  uploadedBy      String
+  fileUrl         String
+  fileName        String?
+  category        String?   // "exterior" | "walls" | "ceiling" | "floor" | "kitchen" | "bathroom" | "electrical" | "plumbing" | "windows" | "roof" | "structural"
+  latitude        Float?
+  longitude       Float?
+  timestamp       DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  property        Property         @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  inspection      PropertyInspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+  uploader        User             @relation(fields: [uploadedBy], references: [id])
+  analyses        PropertyPhotoAnalysis[]
+}
+
+model PropertyDocument {
+  id              String    @id @default(cuid())
+  propertyId      String
+  uploadedBy      String
+  fileName        String
+  fileUrl         String
+  documentType    String    // "ownership" | "approval" | "sale" | "inspection_report" | "maintenance" | "other"
+  verificationStatus String @default("unverified") // "unverified" | "pending" | "verified"
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  uploader        User      @relation(fields: [uploadedBy], references: [id])
+}
+
+model PropertyAiAnalysis {
+  id              String    @id @default(cuid())
+  propertyId      String
+  generatedBy     String
+  model           String?
+  provider        String?
+  conditionLevel  String    // "good" | "moderate" | "poor"
+  conditionScore  Float
+  summary         String?
+  structuredResult String   // full JSON
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  engineer        User      @relation(fields: [generatedBy], references: [id])
+  photoAnalyses   PropertyPhotoAnalysis[]
+}
+
+model PropertyPhotoAnalysis {
+  id              String    @id @default(cuid())
+  analysisId      String
+  photoId         String
+  issueType       String    // "crack" | "dampness" | "stain" | "peeling_paint" | "corrosion" | "damage" | "uneven_surface"
+  description     String
+  confidence      Float
+  severity        String    // "low" | "medium" | "high"
+  recommendation  String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  analysis        PropertyAiAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  photo           PropertyPhoto     @relation(fields: [photoId], references: [id], onDelete: Cascade)
+}
+
+model PropertyChecklist {
+  id              String    @id @default(cuid())
+  propertyId      String
+  category        String    // "property" | "structural" | "utilities" | "legal" | "financial"
+  item            String
+  completed       Boolean   @default(false)
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  property        Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+}
+
+// ─── AI Predictions (ML Data Foundation) ─────────────────────────────────────
+
+model AiPrediction {
+  id              String    @id @default(cuid())
+  projectId       String?
+  propertyId      String?
+  inspectionId    String?
+  photoId         String?
+  modelName       String    // e.g. "Construction Visual Analyzer"
+  modelVersion    String    // e.g. "prototype-v1"
+  prediction      String    // e.g. "Possible Surface Crack"
+  predictionCategory String? // e.g. "crack" | "dampness" | "corrosion"
+  confidence      Float     // 0.0 – 1.0
+  severity        String?   // "low" | "medium" | "high"
+  explanation     String?   // JSON string with explanation data
+  inputMetadata   String?   // JSON string with input context
+  status          String    @default("pending") // "pending" | "confirmed" | "rejected" | "needs_inspection"
+  engineerReview  String?   // engineer's review comment
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  evidenceId      String?   // link to evidence record if added
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  reviewer        User?     @relation(fields: [reviewedBy], references: [id])
+}
+
+model AiDatasetImage {
+  id              String    @id @default(cuid())
+  projectId       String?
+  photoId         String?
+  imageUrl        String
+  imageCategory   String?   // construction category
+  constructionStage String?
+  latitude        Float?
+  longitude       Float?
+  hasLabel        Boolean   @default(false)
+  labelText       String?   // engineer-assigned label
+  labelSeverity   String?   // "low" | "medium" | "high"
+  labeledBy       String?
+  labeledAt       DateTime?
+  hasPrediction   Boolean   @default(false)
+  predictionId    String?
+  createdAt       DateTime  @default(now())
+}
+
+// ─── AI Analysis ─────────────────────────────────────────────────────────────
+
+model AiAnalysis {
+  id                    String    @id @default(cuid())
+  projectId             String
+  previousInspectionId  String
+  currentInspectionId   String
+  generatedBy           String    // user ID of the engineer who requested it
+  model                 String?   // AI model identifier, e.g. "gpt-4o"
+  provider              String?   // AI provider, e.g. "openai"
+  analysisType          String    @default("comparison") // "comparison" | "single"
+  overallAssessment     String    // "progress_detected" | "limited_visible_change" | "no_clear_change" | "insufficient_evidence" | "review_recommended" | "single_inspection"
+  confidence            Float     // 0.0 – 1.0
+  constructionStageObserved String?
+  summary               String?
+  structuredResult      String    // full JSON result as string
+  createdAt             DateTime  @default(now())
+
+  // Relations
+  project              Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  previousInspection   Inspection @relation("PreviousInspectionAnalyses", fields: [previousInspectionId], references: [id])
+  currentInspection    Inspection @relation("CurrentInspectionAnalyses", fields: [currentInspectionId], references: [id])
+  engineer             User       @relation(fields: [generatedBy], references: [id])
+}
+
+// ─── Cost Estimates ─────────────────────────────────────────────────────────
+
+model CostEstimate {
+  id              String    @id @default(cuid())
+  projectId       String
+  userId          String
+  district        String?
+  state           String?
+  builtArea       Float
+  floors          Int?
+  constructionType String?
+  qualityLevel    String    // "economy" | "standard" | "premium"
+  baseRate        Float
+  qualityFactor   Float
+  locationFactor  Float
+  estimatedTotal  Float
+  lowerEstimate   Float
+  higherEstimate  Float
+
+  // ─── Ground-Truth Fields ──────────────────────────────────────────────────
+  methodologyVersion String?  @default("1.0")
+  bcciCentre       String?   // BCCI centre used
+  bcciValue        Float?    // BCCI value used
+  bcciDate         String?   // BCCI reference date
+  locationMatch    String?   // "DIRECT" | "PROXY" | "UNAVAILABLE"
+  evidenceConfidence String? // "HIGH" | "MEDIUM" | "LOW"
+  evidenceConfidenceScore Int? // 0-100
+
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// ─── Workforce Verification ────────────────────────────────────────────────
+
+model Worker {
+  id              String    @id @default(cuid())
+  projectId       String
+  name            String
+  phone           String?
+  workerType      String?   // "mason" | "electrician" | "plumber" | "carpenter" | "helper" | "other"
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignedBy      User?     @relation("WorkerAssignments", fields: [assignedById], references: [id])
+  assignedById    String?
+  checkIns        WorkerCheckIn[]
+}
+
+model WorkerCheckIn {
+  id              String    @id @default(cuid())
+  workerId        String
+  projectId       String
+  latitude        Float
+  longitude       Float
+  accuracy        Float?    // GPS accuracy in metres
+  siteLatitude    Float     // site latitude at time of check-in
+  siteLongitude   Float     // site longitude at time of check-in
+  distanceFromSite Float    // calculated distance in metres
+  geofenceRadius  Float     @default(100) // allowed radius in metres
+  verificationStatus String  @default("pending") // "verified" | "outside_geofence" | "low_accuracy" | "pending" | "checked_out"
+  checkInTime     DateTime  @default(now())
+  checkOutTime    DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  worker          Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  checkedInBy     User?     @relation(fields: [checkedInById], references: [id])
+  checkedInById   String?
+}
+
+// ─── Business Validation (Internal Notes) ───────────────────────────────────
+
+model CustomerInterview {
+  id              String    @id @default(cuid())
+  userId          String
+  personName      String
+  role            String?   // "civil_engineer" | "contractor" | "homeowner" | "other"
+  companyProject  String?   // company or project type
+  problemExperienced String?
+  currentSolution String?
+  frequency       String?   // "daily" | "weekly" | "monthly" | "rarely"
+  severity        String?   // "low" | "medium" | "high" | "critical"
+  willingnessToTry String?  // "yes" | "maybe" | "no" | "already_using"
+  willingnessToPay String?  // "yes" | "maybe" | "no" | "depends"
+  notes           String?
+  interviewDate   DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+model PricingExperiment {
+  id              String    @id @default(cuid())
+  userId          String
+  hypothesis      String
+  testPrice       Float?
+  controlPrice    Float?
+  sampleSize      Int?
+  result          String?   // "positive" | "negative" | "inconclusive" | "pending"
+  notes           String?
+  startDate       DateTime?
+  endDate         DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+model ProductFeedback {
+  id              String    @id @default(cuid())
+  userId          String
+  source          String?   // "interview" | "pilot" | "support" | "survey" | "other"
+  category        String?   // "usability" | "feature" | "bug" | "pricing" | "value" | "other"
+  feedback        String
+  severity        String?   // "low" | "medium" | "high"
+  actionTaken     String?
+  feedbackDate    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+// ─── Pilot Tracking ────────────────────────────────────────────────────────
+
+model Pilot {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  participantName String?
+  participantEmail String?
+  participantRole String?   // "civil_engineer" | "contractor" | "site_supervisor" | "other"
+  customerSegment String?   // "independent_engineer" | "small_contractor" | "mid_size_firm" | "other"
+  status          String    @default("planned") // "prospect" | "screened" | "selected" | "onboarding" | "baseline" | "active" | "midpoint" | "completed" | "validated" | "paused" | "stopped"
+  hypothesis      String?   // primary hypothesis being tested
+  objectives      String    @default("[]") // JSON array of objective keys
+  startDate       DateTime?
+  endDate         DateTime?
+  expectedEndDate DateTime?
+  durationDays    Int?      // expected pilot duration in days
+  featuresUsed    String    @default("[]") // JSON array of features used
+  baselineProcess String?   // description of process before BuildMe
+  currentProcess  String?   // description of process with BuildMe
+  problemsObserved String?
+  outcome         String?   // "continue" | "modify" | "stop" | "inconclusive"
+  outcomeNotes    String?
+  onboardingChecklist String @default("{}") // JSON: step -> completed
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  measurements    PilotMeasurement[]
+  feedback        PilotFeedback[]
+}
+
+model PilotMeasurement {
+  id              String    @id @default(cuid())
+  pilotId         String
+  category        String    // "inspection_coordination" | "issue_tracking" | "evidence_collection" | "workforce_verification" | "homeowner_communication" | "overall"
+  metricName      String    // e.g. "hours_per_week", "minutes_per_inspection"
+  baselineValue   Float?    // value before BuildMe
+  currentValue    Float?    // current observed value
+  unit            String?   // "hours" | "minutes" | "count" | "percentage"
+  measurementDate DateTime  @default(now())
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  pilot           Pilot     @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+}
+
+model PilotFeedback {
+  id              String    @id @default(cuid())
+  pilotId         String
+  userId          String
+  category        String    // "usability" | "usefulness" | "bug" | "missing_feature" | "pricing" | "trust" | "other"
+  rating          Int?      // 1-5
+  feedback        String
+  feature         String?   // specific feature the feedback relates to
+  severity        String?   // "low" | "medium" | "high"
+  feedbackDate    DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  pilot           Pilot     @relation(fields: [pilotId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+// ─── Product Usage Analytics ────────────────────────────────────────────────
+
+model ProductEvent {
+  id              String    @id @default(cuid())
+  userId          String
+  projectId       String?
+  eventType       String    // "project_created" | "inspection_created" | "photo_uploaded" | "issue_created" | "issue_resolved" | "evidence_added" | "worker_added" | "workforce_checkin" | "homeowner_concern_reported" | "cost_estimate_created" | "ai_analysis_requested" | "login"
+  metadata        String?   // JSON string with additional context
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  user            User      @relation(fields: [userId], references: [id])
+  project         Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+}
+
+// ─── Risk Prediction Logging ───────────────────────────────────────────────
+// Stores every risk intelligence computation for future ML training.
+// Each record represents a snapshot of risk features + prediction at a point in time.
+// Ground truth labels can be attached later from pilot outcomes.
+
+model RiskPrediction {
+  id              String    @id @default(cuid())
+  projectId       String
+  engineVersion   String    // "risk-engine-v1"
+  overallRisk     Int       // 0–100
+  riskCategory    String    // "low" | "medium" | "high" | "critical"
+  categoryRisks   String    // JSON — per-category risk scores
+  features        String    // JSON — 24-feature vector snapshot
+  dataConfidence  Int       // 0–100
+  explanation     String    // JSON — risk explanations
+  generatedAt     DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+// ─── Customer Discovery ─────────────────────────────────────────────────────
+// Structured records of customer discovery interviews and business validation.
+// No personal contact information is stored — only role references.
+
+model CustomerDiscovery {
+  id              String    @id @default(cuid())
+  createdById     String
+  participantRef  String?   // non-PII reference (e.g., "Engineer #1", "Contractor A")
+  role            String?   // "civil_engineer" | "contractor" | "site_supervisor" | "developer" | "other"
+  organizationType String?  // "individual" | "small_firm" | "mid_size" | "enterprise"
+  interviewDate   DateTime?
+
+  // Current workflow
+  currentWorkflow String?   // how they currently manage projects
+  biggestPain     String?   // most significant pain point
+  painSeverity    String?   // "low" | "medium" | "high" | "critical"
+  frequency       String?   // how often the pain occurs
+  costOfProblem   String?   // what happens when the problem is not handled
+  currentTools    String?   // WhatsApp, spreadsheets, etc.
+
+  // BuildMe reaction
+  buildMeReaction String?   // what feature would be most useful
+  trustedIntelligence Boolean? // would they trust BuildMe intelligence
+  mostValuableFeature String? // which feature is most valuable
+  requestedFeature String?  // what feature is missing
+
+  // Commercial signals
+  willingnessToPilot String? // "yes" | "maybe" | "no"
+  willingnessToPay  String?  // "definitely" | "probably" | "unsure" | "probably_not" | "definitely_not"
+  preferredPricingModel String? // "per_project" | "per_engineer" | "monthly" | "annual" | "enterprise"
+  biggestObjection String?  // main concern or objection
+
+  // Status
+  status          String    @default("discovered") // "discovered" | "interviewed" | "interested" | "pilot_candidate" | "pilot_active" | "pilot_completed" | "paying" | "retained"
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  createdBy       User      @relation(fields: [createdById], references: [id])
+}
+
+// PricingExperiment model already exists earlier in schema (line ~528)
+
+// ─── Action Items (Command Center) ─────────────────────────────────────────
+// Persistent action items generated from intelligence engine signals.
+// Each action traces back to a real database signal — no fabricated actions.
+
+model ActionItem {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  title           String
+  description     String
+  category        String    // "inspection" | "issue" | "evidence" | "schedule" | "workforce" | "homeowner"
+  priority        String    @default("medium") // "critical" | "high" | "medium" | "low"
+  signal          String    // the specific signal that triggered this action, e.g. "inspectionOverdue"
+  signalValue     String?   // the observed value, e.g. "35 days"
+  source          String    @default("risk-engine-v1") // which engine generated this
+  href            String    // deep link to the relevant workflow
+  status          String    @default("open") // "open" | "in_progress" | "completed" | "dismissed"
+  completedNote   String?   // engineer's completion note
+  completedAt     DateTime?
+  completedById   String?
+  dismissedReason String?   // why the action was dismissed
+  dismissedAt     DateTime?
+  outcome         String?   // "resolved" | "completed" | "no_issue" | "escalated" | "waiting" | "other"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  feedback        ActionFeedback[]
+}
+
+// ─── Action Feedback ────────────────────────────────────────────────────────
+// Engineer feedback on whether a recommendation was useful.
+// Critical for future intelligence validation.
+
+model ActionFeedback {
+  id              String    @id @default(cuid())
+  actionId        String
+  userId          String
+  useful          String    // "yes" | "partially" | "no"
+  falsePositive   Boolean?  // engineer determined no action was needed
+  missedIssue     Boolean?  // engineer found something BuildMe did NOT flag
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  action          ActionItem @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id])
+}
+
+// ─── Value Proposition Experiments ──────────────────────────────────────────
+// Structured value hypotheses and their validation status.
+
+// ─── Budget Events (Project Truth Layer) ────────────────────────────────────
+// Tracks every financial event that affects the project budget.
+// Each event links to a source: quotation, payment, change, material, labour, etc.
+// Enables the "Budget Story" — why did the expected cost change?
+
+model BudgetEvent {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  type            String    // "original_estimate" | "payment" | "material_cost" | "labour_cost" | "change_impact" | "site_condition" | "escalation" | "other"
+  category        String?   // "foundation" | "structure" | "brickwork" | "roofing" | "flooring" | "electrical" | "plumbing" | "painting" | "waterproofing" | "other"
+  title           String
+  description     String?
+  amount          Float     // positive = cost increase, negative = cost decrease
+  cumulativeTotal Float?    // running total of expected cost after this event
+  confidence      String    @default("medium") // "high" | "medium" | "low" | "unverified"
+  source          String    @default("engineer") // "quotation" | "engineer" | "homeowner" | "ai_observation" | "system" | "payment"
+  changeRequestId String?   // link to ChangeRequest if this event resulted from a change
+  evidenceRef     String?   // reference to supporting evidence (photo, document, etc.)
+  approved        Boolean   @default(false)
+  approvedById    String?
+  approvedAt      DateTime?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User       @relation(fields: [createdById], references: [id])
+  changeRequest   ChangeRequest? @relation(fields: [changeRequestId], references: [id])
+}
+
+// ─── Change Requests ────────────────────────────────────────────────────────
+// Formal record of design/scope changes with estimated cost impact.
+// Every change creates a BudgetEvent linked to this request.
+
+model ChangeRequest {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  title           String
+  description     String?
+  category        String    // "addition" | "deletion" | "modification" | "material_upgrade" | "design_change" | "site_requirement" | "other"
+  status          String    @default("proposed") // "proposed" | "approved" | "rejected" | "in_progress" | "completed" | "cancelled"
+  estimatedCostLow  Float?  // estimated cost impact lower bound
+  estimatedCostHigh Float?  // estimated cost impact upper bound
+  actualCost      Float?    // actual cost after completion
+  assumptions     String?   // JSON — what assumptions went into the estimate
+  timelineImpactDays Int?   // estimated impact on project timeline
+  rationale       String?   // why this change was needed
+  approvedById    String?
+  approvedAt      DateTime?
+  completedAt     DateTime?
+  evidenceRef     String?   // supporting evidence
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  budgetEvents    BudgetEvent[]
+}
+
+// ─── Site Context ───────────────────────────────────────────────────────────
+// Records site-specific conditions that affect construction cost and risk.
+// These become ML features for future spatial intelligence models.
+// Separate: observed vs user-entered vs derived vs unknown.
+
+model SiteContext {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  roadAccess      String?   // "wide" | "narrow" | "single_lane" | "no_road" | "unknown"
+  vehicleAccess   String?   // "full" | "limited" | "restricted" | "none" | "unknown"
+  waterAvailability String? // "municipal" | "borewell" | "tanker" | "seasonal" | "unknown"
+  siteLevel       String?   // "above_road" | "at_road" | "below_road" | "sloped" | "unknown"
+  soilType        String?   // "rocky" | "sandy" | "clay" | "marshy" | "mixed" | "unknown"
+  waterTableDepth String?   // "shallow" | "moderate" | "deep" | "unknown"
+  accessDistanceM Int?      // distance from main road in metres
+  basementRequired Boolean @default(false)
+  costRiskNotes   String?   // engineer's notes on site-related cost risks
+  evidenceRef     String?   // supporting evidence (photo, document)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+}
+
+model ValueExperiment {
+  id              String    @id @default(cuid())
+  createdById     String
+  hypothesis      String    // e.g., "BuildMe reduces reporting time"
+  evidenceRequired String?  // what evidence would validate this
+  evidenceCollected String? // what evidence has been collected
+  status          String    @default("not_tested") // "not_tested" | "early_signal" | "validated"
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  createdBy       User      @relation(fields: [createdById], references: [id])
+}
+
+// ─── Quotation Intelligence ─────────────────────────────────────────────────
+
+model Quotation {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  title           String    // e.g., "Hemanth Kumar R - Structure Estimate"
+  sourceDocument  String?   // original file name
+  sourceType      String    @default("pdf") // "pdf" | "image" | "text" | "manual"
+
+  // Extracted project info
+  location        String?
+  builtArea       Float?
+  floors          Int?
+  projectType     String?   // "residential" | "commercial" | "renovation"
+
+  // Pricing
+  totalAmount     Float?
+  ratePerSqFt     Float?
+  ratePerSquare   Float?   // per 100 sq ft
+  rateType        String?   // "per_sqft" | "per_square" | "package" | "boq" | "lump_sum"
+
+  // Scope coverage (boolean flags)
+  includesStructure   Boolean @default(false)
+  includesFoundation  Boolean @default(false)
+  includesMasonry     Boolean @default(false)
+  includesPlastering  Boolean @default(false)
+  includesFlooring    Boolean @default(false)
+  includesWaterproofing Boolean @default(false)
+  includesPainting    Boolean @default(false)
+  includesDoors       Boolean @default(false)
+  includesElectrical  Boolean @default(false)
+  includesPlumbing    Boolean @default(false)
+  includesKitchen     Boolean @default(false)
+  includesBathroom    Boolean @default(false)
+  includesFittings    Boolean @default(false)
+  includesFabrication  Boolean @default(false)
+
+  // Material specification
+  materialBrands   String?   // JSON: { cement: "Ramco", tmt: "JSW", ... }
+  materialSpec     String?   // free text material specification
+  qualityLevel     String?   // "economy" | "standard" | "premium" | "luxury"
+
+  // Conditions
+  paymentTerms     String?
+  escalationClause String?
+  exclusions       String?   // JSON array of excluded items
+  assumptions      String?   // JSON array of assumptions
+  validity         String?   // e.g., "30 days"
+  siteRequirements String?   // JSON: site conditions mentioned
+
+  // Analysis
+  scopeCompleteness Int      @default(0) // 0-100 score
+  missingInfo       String?   // JSON array of missing/unclear items
+  analysisNotes     String?   // engineer notes on the quotation
+
+  // Comparison
+  comparableScope   Boolean  @default(true) // can this be compared with others?
+  comparisonWarning String?   // warning about comparability
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  lineItems       QuotationLine[]
+}
+
+model QuotationLine {
+  id              String    @id @default(cuid())
+  quotationId     String
+  category        String    // "structure" | "masonry" | "flooring" | "electrical" | etc.
+  description     String
+  quantity        Float?
+  unit            String?   // "sqft" | "sqm" | "running_ft" | "nos" | "cum" | "kg"
+  rate            Float?
+  amount          Float?
+  isExcluded      Boolean  @default(false)
+  notes           String?
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  quotation       Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+}
+
+// ─── Payment Requests (Project Truth Layer) ────────────────────────────────
+// Engineers create payment requests linked to project milestones.
+// Homeowners see WHY they are being asked for money.
+
+model PaymentRequest {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  title           String    // e.g., "Roof milestone payment"
+  description     String?
+  amount          Float     // requested amount
+  milestone       String?   // e.g., "foundation" | "structure" | "roofing" | "finishing"
+  status          String    @default("requested") // "requested" | "approved" | "paid" | "disputed" | "cancelled"
+  evidenceCount   Int       @default(0) // number of supporting evidence items
+  budgetRemaining Float?    // remaining budget at time of request
+  totalPaidSoFar  Float?    // total paid before this request
+  approvedById    String?
+  approvedAt      DateTime?
+  paidAt          DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+}
+
+// ─── Progress Observations (AI Progress Intelligence Layer) ──────────────────
+// Stores structured observations from daily site photos.
+// Each observation has OBSERVED / INFERRED / NOT VERIFIABLE categories.
+
+model ProgressObservation {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  observationDate DateTime  @default(now())
+  title           String    // e.g., "Column formwork visible"
+  observed        String    // what is directly visible in photos
+  inferred        String?   // what can be reasonably inferred
+  notVerifiable   String?   // what cannot be confirmed from photos
+  confidence      String    @default("medium") // "high" | "medium" | "low"
+  previousPhotoId String?   // reference to previous photo
+  currentPhotoId  String?   // reference to current photo
+  changeDescription String? // what changed vs previous
+  stage           String?   // construction stage observed
+  verified        Boolean   @default(false) // engineer verified this observation
+  verifiedById    String?
+  verifiedAt      DateTime?
+  verificationNote String?  // engineer's verification note
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation("CreatedProgressObs", fields: [createdById], references: [id])
+  verifiedBy      User?     @relation("VerifiedProgressObs", fields: [verifiedById], references: [id])
+}
+
+// ─── Project Evidence (Ground-Truth Validation) ────────────────────────────
+
+model ProjectEvidence {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  evidenceType    String    // "quotation" | "boq" | "estimate_document" | "invoice" | "final_bill" | "completion_doc" | "photo" | "other"
+  documentName    String
+  description     String?
+  fileUrl         String?
+  verificationStatus String @default("unverified") // "unverified" | "user_confirmed" | "independently_verified"
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+}

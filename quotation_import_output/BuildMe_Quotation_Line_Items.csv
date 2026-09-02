@@ -1,0 +1,55 @@
+quotation_id,document_name,stage,description,category,unit,quantity,rate_inr,amount_inr,notes,extraction_method
+QUO_f93c6a8e,VINITHA Residence BOQ,GF footing/basement,Earthwork excavation,,cft,6728.0,,,Detailed BOQ; rate not visible in indexed extract,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF footing/basement,Fe500 reinforcement steel,,kg,4931.02,90.0,443791.73,,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF columns,RCC M20 columns,,cft,195.75,475.0,92981.25,,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF flooring,Granite steps/entry,,sft,204.38,450.0,91968.75,,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF joinery,Main teak door,,sft,26.25,2500.0,65625.0,,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF joinery,UPVC windows + grill,,sft,236.0,900.0,212400.0,,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF services,Plumbing,,sft,2254.1,150.0,338115.0,,CSV_import
+QUO_f93c6a8e,VINITHA Residence BOQ,GF services,Electrical,,sft,2254.1,175.0,394467.5,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Earthwork excavation,,m3,39.0,200.0,7800.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,River sand foundation filling,,m3,4.0,700.0,2800.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,River sand basement filling,,m3,74.0,700.0,51800.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,PCC 1:5:10 foundation,,m3,10.0,3500.0,35000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,RCC 1:2:4,,m3,30.0,14000.0,420000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Brickwork CM 1:5,,m3,42.0,3500.0,147000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Granite flooring,,m2,62.0,1500.0,93000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Plastering CM 1:5,,m2,366.0,250.0,91500.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Doors/windows + labour,,m2,20.0,4500.0,90000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Electrification provision,,LS,1.0,85000.0,85000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Water supply & sanitary,,LS,1.0,55000.0,55000.0,,CSV_import
+QUO_6ac53244,SEKARAN Detailed Estimate,Ground floor,Staircase provision,,LS,1.0,35000.0,35000.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,Earthwork excavation,,m3,42.91,420.0,18022.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,Sand filling foundation,,m3,3.74,1200.0,4488.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,PCC 1:4:8 foundation,,m3,5.58,1800.0,10044.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,RCC foundation/basement,,m3,13.49,4400.0,59356.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,Brickwork CM 1:5,,m3,88.09,1600.0,140944.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,Marble flooring,,m2,73.95,1100.0,81345.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,Electrical provision,,LS,1.0,88090.0,88090.0,,CSV_import
+QUO_c2df043f,S. Chitra Licensed Surveyor Estimate,Ground + first floor,Borewell,,Rft,250.0,250.0,62500.0,,CSV_import
+QUO_f27bbb4e,Dr. Radhakrishnan BOQ,Residential building,Earthwork excavation,,cum,172.58,150.0,25887.0,,CSV_import
+QUO_f27bbb4e,Dr. Radhakrishnan BOQ,Residential building,Earth filling,,cum,172.58,35.0,6040.3,,CSV_import
+QUO_0ade85e7,Coimbatore Residential Estimate,,Excavation 0–1.5m,,CFT,3340.0,18.0,60120.0,,CSV_import
+QUO_0ade85e7,Coimbatore Residential Estimate,,Foundation refilling,,CFT,3006.0,10.0,30060.0,,CSV_import
+QUO_0ade85e7,Coimbatore Residential Estimate,,Filling earth,,CFT,4250.8,35.0,148778.0,,CSV_import
+QUO_0ade85e7,Coimbatore Residential Estimate,,M-sand filling,,CFT,1195.2,80.0,95616.0,,CSV_import
+QUO_0ade85e7,Coimbatore Residential Estimate,,Anti-termite treatment,,Sft,1446.0,12.0,17352.0,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Earthwork excavation,,m3,85.12,480.0,40857.6,Prepared by Padmachandra Consulting Engineers,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Rubble masonry foundation,,m3,34.05,7850.0,267292.5,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,PCC below foundation,,m3,12.77,5500.0,70235.0,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Floor concrete,,m3,13.62,6100.0,83095.73,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Steel,,kg,181.34,95.0,17227.34,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Plastering,,m2,703.64,720.0,506623.68,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Paneled wood doors/windows,,m2,61.17,8750.0,535237.5,,CSV_import
+QUO_a5090ae7,Varghese Residence Detailed Estimate,Residential house,Vitrified tiles,,m2,115.51,2750.0,317644.25,,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Civil works,,LS,1.0,3519338.0,3519338.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Flooring,,LS,1.0,225000.0,225000.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Wood works,,LS,1.0,1319585.0,1319585.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Painting works,,LS,1.0,395162.0,395162.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Electrical work,,LS,1.0,240500.0,240500.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Plumbing work,,LS,1.0,305000.0,305000.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Architectural features,,LS,1.0,916400.0,916400.0,Abstract category,CSV_import
+QUO_768f8387,Susamma Jose BOQ,,Interior works,,LS,1.0,1825240.0,1825240.0,Abstract category,CSV_import
+QUO_7939a2e7,Harisankar Detailed Estimate,Ground floor,Earthwork excavation,,m3,95.0,450.0,42750.0,,CSV_import
+QUO_7939a2e7,Harisankar Detailed Estimate,Ground floor,Random rubble masonry,,m3,98.0,3050.0,298900.0,,CSV_import
+QUO_94773217,Aswanth Krishna Detailed Estimate,Ground floor,Project estimate,,LS,1.0,4099556.0,4099556.0,Indexed source confirms total; detailed line items available in source,CSV_import

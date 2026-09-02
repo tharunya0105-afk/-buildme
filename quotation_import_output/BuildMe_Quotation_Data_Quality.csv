@@ -1,0 +1,11 @@
+metric,value,note
+total_documents_discovered,33,All files in quoationpdf/
+importable_documents,24,"QUOTATION, BOQ, CONTRACTOR_ESTIMATE types"
+documents_imported,0,After deduplication
+duplicates_found,0,By content hash
+total_line_items,54,From CSV extraction
+documents_with_area,1,
+documents_with_total,5,
+documents_with_date,3,
+records_treated_as_final_cost,0,CRITICAL: quotations are NOT final costs
+records_eligible_for_validation,0,No actual/final cost data in quotations

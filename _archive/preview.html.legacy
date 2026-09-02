@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BuildMe - AI + Spatial Intelligence for Construction</title>
+<style>
+:root{--primary:#2563eb;--primary-dark:#1d4ed8;--border:#e5e7eb;--surface:#f9fafb;--text:#111827;--text2:#4b5563;--text3:#9ca3af;--green:#059669;--green-bg:#ecfdf5;--amber:#d97706;--amber-bg:#fffbeb;--red:#dc2626;--red-bg:#fef2f2;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);background:#fff;min-height:100vh;}
+.sidebar{position:fixed;left:0;top:0;width:256px;height:100vh;background:#fff;border-right:1px solid var(--border);z-index:40;display:flex;flex-direction:column;transition:transform .2s;}
+.sidebar-header{display:flex;align-items:center;gap:8px;padding:16px 20px;border-bottom:1px solid var(--border);}
+.sidebar-header h1{font-size:17px;font-weight:700;}
+.sidebar-nav{flex:1;padding:12px 8px;overflow-y:auto;}
+.nav-sec{margin-bottom:14px;}
+.nav-sec-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:0 12px;margin-bottom:6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;text-decoration:none;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--surface);color:var(--text);}
+.nav-item.active{background:rgba(37,99,235,.1);color:var(--primary);}
+.main{margin-left:256px;min-height:100vh;}
+.page{display:none;padding:20px 28px;}
+.page.active{display:block;}
+.page-hdr{margin-bottom:20px;}
+.page-hdr h2{font-size:22px;font-weight:700;}
+.page-hdr p{font-size:13px;color:var(--text2);margin-top:2px;}
+.card{background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.card-hdr{padding:14px 20px;border-bottom:1px solid var(--border);}
+.card-body{padding:14px 20px;}
+.grid{display:grid;gap:12px;}
+.g2{grid-template-columns:repeat(2,1fr);}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g4{grid-template-columns:repeat(4,1fr);}
+.g5{grid-template-columns:repeat(5,1fr);}
+@media(max-width:900px){.g2,.g3,.g4,.g5{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.g2,.g3,.g4,.g5{grid-template-columns:1fr;}.sidebar{transform:translateX(-100%);z-index:100;}.sidebar.open{transform:translateX(0);}.main{margin-left:0;}.mobile-toggle{display:flex!important;}}
+.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:50;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;}
+.btn-p{background:var(--primary);color:#fff;}.btn-p:hover{background:var(--primary-dark);}
+.btn-s{background:#fff;color:var(--text);border:1px solid var(--border);}.btn-s:hover{background:var(--surface);}
+.btn-sm{padding:5px 10px;font-size:12px;}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;}
+.b-green{background:var(--green-bg);color:var(--green);}
+.b-yellow{background:var(--amber-bg);color:var(--amber);}
+.b-red{background:var(--red-bg);color:var(--red);}
+.b-blue{background:rgba(37,99,235,.1);color:var(--primary);}
+.b-gray{background:var(--surface);color:var(--text3);}
+.b-demo{background:#fef3c7;color:#92400e;font-size:9px;}
+.b-real{background:var(--green-bg);color:var(--green);font-size:9px;}
+.metric{padding:14px;}.metric-l{font-size:11px;color:var(--text3);}.metric-v{font-size:26px;font-weight:700;margin-top:2px;}.metric-n{font-size:9px;color:var(--text3);margin-top:2px;}
+.proj-card{padding:14px;cursor:pointer;transition:box-shadow .15s;}.proj-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.proj-name{font-size:13px;font-weight:600;margin-bottom:3px;}.proj-meta{font-size:11px;color:var(--text3);display:flex;gap:8px;flex-wrap:wrap;}
+.progress{height:5px;background:var(--surface);border-radius:3px;overflow:hidden;margin-top:6px;}.progress-fill{height:100%;border-radius:3px;}
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;}
+.tab{padding:10px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.tab:hover{color:var(--text);}.tab.active{color:var(--primary);border-bottom-color:var(--primary);}
+.timeline{position:relative;padding-left:28px;}.timeline::before{content:'';position:absolute;left:9px;top:0;bottom:0;width:2px;background:var(--border);}
+.tl-item{position:relative;margin-bottom:20px;}.tl-dot{position:absolute;left:-28px;top:2px;width:22px;height:22px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;}
+.tl-dot.blue{border-color:var(--primary);background:rgba(37,99,235,.1);}.tl-dot.green{border-color:var(--green);background:var(--green-bg);}.tl-dot.yellow{border-color:var(--amber);background:var(--amber-bg);}.tl-dot.red{border-color:var(--red);background:var(--red-bg);}
+.map-area{background:linear-gradient(135deg,#e0f2fe 0%,#dbeafe 50%,#e0e7ff 100%);border:2px dashed var(--border);border-radius:12px;height:380px;position:relative;overflow:hidden;}
+.map-marker{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;position:absolute;cursor:pointer;transition:transform .2s;}.map-marker:hover{transform:scale(1.15);}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60;align-items:center;justify-content:center;padding:16px;}
+.modal-bg.show{display:flex;}
+.modal{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);}
+.modal-body{padding:20px;}.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.fg{margin-bottom:14px;}.fl{display:block;font-size:13px;font-weight:500;margin-bottom:3px;}
+.fi,.fs,.ft{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(37,99,235,.1);}
+.ft{min-height:60px;resize:vertical;}
+.trust{display:inline-flex;align-items:center;gap:2px;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:700;letter-spacing:.03em;}
+.trust-ai{background:var(--amber-bg);color:var(--amber);}.trust-eng{background:var(--green-bg);color:var(--green);}.trust-self{background:var(--surface);color:var(--text3);}.trust-photo{background:rgba(37,99,235,.1);color:var(--primary);}
+.landing-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);}
+.hero{padding:60px 0 40px;}.hero h1{font-size:44px;font-weight:700;line-height:1.1;}.hero .sub{font-size:18px;color:var(--text2);margin-top:12px;}.hero .desc{font-size:15px;color:var(--text3);margin-top:12px;max-width:600px;line-height:1.6;}
+.section-t{font-size:20px;font-weight:700;margin-bottom:14px;}.divider{border-top:1px solid var(--border);margin:40px 0;}
+.feature-icon{width:40px;height:40px;border-radius:8px;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;font-size:13px;border-collapse:collapse;}
+th{text-align:left;padding:10px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);}
+td{padding:10px;border-bottom:1px solid var(--border);}
+.empty{text-align:center;padding:40px;color:var(--text3);font-size:13px;}
+.alert-bar{padding:10px 14px;border-radius:6px;font-size:11px;margin-bottom:16px;}
+.alert-warn{background:var(--amber-bg);border:1px solid rgba(217,119,6,.2);color:var(--amber);}
+.alert-info{background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.15);color:var(--primary);}
+.alert-error{background:var(--red-bg);border:1px solid rgba(220,38,38,.15);color:var(--red);}
+.alert-success{background:var(--green-bg);border:1px solid rgba(5,150,105,.15);color:var(--green);}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:100;display:none;box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.toast.show{display:block;animation:fadeInUp .3s;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* CEDI Demo */
+.demo-overlay{display:none;position:fixed;inset:0;background:#fff;z-index:200;overflow-y:auto;}
+.demo-overlay.show{display:block;}
+.demo-nav{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;z-index:10;}
+.demo-nav-left{display:flex;align-items:center;gap:12px;}
+.demo-progress{width:200px;height:4px;background:var(--surface);border-radius:2px;overflow:hidden;}
+.demo-progress-fill{height:100%;background:var(--primary);border-radius:2px;transition:width .3s;}
+.demo-step-label{font-size:12px;color:var(--text3);}
+.demo-body{max-width:800px;margin:0 auto;padding:40px 24px 80px;}
+.demo-step{display:none;}
+.demo-step.active{display:block;animation:fadeInUp .4s;}
+.demo-title{font-size:32px;font-weight:700;margin-bottom:8px;}
+.demo-subtitle{font-size:16px;color:var(--text2);margin-bottom:24px;line-height:1.6;}
+.demo-narration{background:var(--surface);border-left:3px solid var(--primary);padding:12px 16px;border-radius:0 8px 8px 0;margin:20px 0;font-size:14px;color:var(--text2);line-height:1.7;font-style:italic;}
+.demo-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.demo-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0;}
+.demo-flow-item{padding:6px 12px;border-radius:6px;font-size:12px;font-weight:600;background:rgba(37,99,235,.08);color:var(--primary);}
+.demo-flow-arrow{color:var(--text3);font-size:14px;}
+.demo-badge-big{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.03em;}
+.demo-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.demo-btn-p{background:var(--primary);color:#fff;}.demo-btn-p:hover{background:var(--primary-dark);}
+.demo-btn-s{background:#fff;color:var(--text);border:1px solid var(--border);}.demo-btn-s:hover{background:var(--surface);}
+.demo-grid{display:grid;gap:12px;}
+.demo-grid-2{grid-template-columns:1fr 1fr;}
+.demo-grid-3{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:600px){.demo-grid-2,.demo-grid-3{grid-template-columns:1fr;}.demo-title{font-size:24px;}}
+</style>
+</head>
+<body>
+<button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- LANDING PAGE -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="landing" class="page active" style="margin-left:0;max-width:900px;margin:0 auto;padding:0 20px;">
+  <nav class="landing-nav">
+    <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:22px;">🏗️</span><span style="font-size:17px;font-weight:700;">BuildMe</span></div>
+    <div style="display:flex;gap:14px;align-items:center;">
+      <a href="#" onclick="nav('dashboard')" style="font-size:13px;color:var(--text2);text-decoration:none;">Sign In</a>
+      <button class="btn btn-p" onclick="nav('dashboard')">Get Started</button>
+    </div>
+  </nav>
+  <section class="hero">
+    <h1>BuildMe</h1>
+    <p class="sub">AI + Spatial Intelligence for Residential Construction & Property Decisions</p>
+    <p class="desc">BuildMe connects homeowners, engineers and contractors through AI-assisted inspections, spatial intelligence, quotation analysis and evidence-based construction management.</p>
+    <div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap;">
+      <button class="btn btn-p" onclick="nav('projects')" style="padding:10px 20px;font-size:15px;">Start Building →</button>
+      <button class="btn btn-s" onclick="nav('property-intel')" style="padding:10px 20px;font-size:15px;">Evaluate a Property</button>
+    </div>
+  </section>
+  <div class="divider"></div>
+  <h2 class="section-t">One Platform. Two Journeys.</h2>
+  <div class="grid g2" style="margin-bottom:40px;">
+    <div class="card" style="border-left:4px solid var(--primary);"><div class="card-body">
+      <h3 style="font-size:15px;font-weight:600;color:var(--primary);margin-bottom:6px;">🏗️ BUILD</h3>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Manage a property that is being constructed.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;"><span class="badge b-blue">Plan</span><span class="badge b-blue">Estimate</span><span class="badge b-blue">Quote</span><span class="badge b-blue">Construct</span><span class="badge b-blue">Inspect</span><span class="badge b-blue">Monitor</span><span class="badge b-blue">Resolve</span></div>
+    </div></div>
+    <div class="card" style="border-left:4px solid var(--green);"><div class="card-body">
+      <h3 style="font-size:15px;font-weight:600;color:var(--green);margin-bottom:6px;">🏠 BUY</h3>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:12px;">Evaluate a ready-built property before making a decision.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;"><span class="badge b-green">Locate</span><span class="badge b-green">Inspect</span><span class="badge b-green">Analyze</span><span class="badge b-green">Verify</span><span class="badge b-green">Review</span><span class="badge b-green">Decide</span></div>
+    </div></div>
+  </div>
+  <div class="divider"></div>
+  <h2 class="section-t">Technology</h2>
+  <div class="grid g3" style="margin-bottom:40px;">
+    <div class="card"><div class="card-body"><div class="feature-icon">🤖</div><h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">AI / ML</h3><p style="font-size:13px;color:var(--text2);line-height:1.6;">Image Analysis · Document Intelligence · Future Cost Prediction</p></div></div>
+    <div class="card"><div class="card-body"><div class="feature-icon">📍</div><h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">Spatial Intelligence</h3><p style="font-size:13px;color:var(--text2);line-height:1.6;">GPS · Maps · Site Context · Location-Aware Analysis</p></div></div>
+    <div class="card"><div class="card-body"><div class="feature-icon">🛡️</div><h3 style="font-size:15px;font-weight:600;margin-bottom:6px;">Evidence Intelligence</h3><p style="font-size:13px;color:var(--text2);line-height:1.6;">Photos · Timestamps · Inspections · Audit Timeline · Human Review</p></div></div>
+  </div>
+  <div class="divider"></div>
+  <h2 class="section-t">Human + AI</h2>
+  <div class="card" style="margin-bottom:40px;border-left:4px solid var(--primary);"><div class="card-body" style="display:flex;flex-wrap:wrap;gap:20px;align-items:center;">
+    <div style="flex:1;min-width:260px;">
+      <p style="font-size:15px;line-height:1.7;"><strong>AI assists.</strong> Engineers review. Homeowners participate. Contractors respond. BuildMe records the evidence.</p>
+      <p style="font-size:11px;color:var(--red);margin-top:10px;font-weight:600;">BuildMe does not replace professional engineering judgment.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;"><span class="badge b-blue">🤖 AI</span><span class="badge b-green">👷 Engineer</span><span class="badge b-yellow">🏠 Homeowner</span><span class="badge b-gray">🔨 Contractor</span></div>
+  </div></div>
+  <div style="border-top:1px solid var(--border);padding:24px 0;display:flex;justify-content:space-between;font-size:13px;color:var(--text3);"><div style="display:flex;align-items:center;gap:6px;">🏗️ BuildMe</div><p>© 2026 BuildMe. All rights reserved.</p></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- APP SHELL -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="app-shell" style="display:none;">
+  <aside class="sidebar">
+    <div class="sidebar-header"><span style="font-size:22px;">🏗️</span><h1>BuildMe</h1></div>
+    <nav class="sidebar-nav">
+      <div class="nav-sec"><div class="nav-sec-title">Main</div>
+        <button class="nav-item active" data-page="dashboard" onclick="nav('dashboard')">🏠 Dashboard</button>
+        <button class="nav-item" data-page="projects" onclick="nav('projects')">🏗️ Projects</button>
+        <button class="nav-item" data-page="spatial" onclick="nav('spatial')">📍 Spatial Intelligence</button>
+        <button class="nav-item" data-page="inspections" onclick="nav('inspections')">📷 Inspections</button>
+      </div>
+      <div class="nav-sec"><div class="nav-sec-title">Intelligence</div>
+        <button class="nav-item" data-page="ai" onclick="nav('ai')">🤖 AI Intelligence</button>
+        <button class="nav-item" data-page="cost" onclick="nav('cost')">💰 Cost Intelligence</button>
+        <button class="nav-item" data-page="quotations" onclick="nav('quotations')">📄 Quotations</button>
+      </div>
+      <div class="nav-sec"><div class="nav-sec-title">Property</div>
+        <button class="nav-item" data-page="property-intel" onclick="nav('property-intel')">🏠 Property Intelligence</button>
+        <button class="nav-item" data-page="evidence" onclick="nav('evidence')">⚠️ Issues & Evidence</button>
+        <button class="nav-item" data-page="workforce" onclick="nav('workforce')">👷 Workforce</button>
+      </div>
+      <div class="nav-sec"><div class="nav-sec-title">Business</div>
+        <button class="nav-item" data-page="business" onclick="nav('business')">💼 Business & Validation</button>
+      </div>
+      <div class="nav-sec" style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border);">
+        <button class="nav-item" onclick="openDemo()" style="background:var(--primary);color:#fff;font-weight:600;">🎯 CEDI Demo</button>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="main">
+
+    <!-- ═══════════ DASHBOARD ═══════════ -->
+    <div id="pg-dashboard" class="page active">
+      <div class="page-hdr"><h2>BuildMe Command Center</h2><p>Manage construction, inspections, property intelligence and evidence from one place.</p></div>
+
+      <!-- CEDI Demo Guide -->
+      <div class="card" style="margin-bottom:16px;border-left:4px solid var(--primary);">
+        <div class="card-body">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:6px;">🎬 CEDI Demo — Recommended Flow</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('projects')">1. Construction Project</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('spatial')">2. Spatial Intelligence</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('quotations')">3. Real Quotation</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('cost')">4. Cost Estimate</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('inspections')">5. Site Inspection</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('ai')">6. AI Analysis</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('evidence')">7. Evidence</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('evidence')">8. Issue Resolution</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('workforce')">9. Workforce Verification</span>
+            <span class="badge b-blue" style="cursor:pointer;padding:4px 8px;" onclick="nav('business')">10. Business Validation</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid g5" style="margin-bottom:16px;">
+        <div class="card metric"><div class="metric-l">Active Projects</div><div class="metric-v" style="color:var(--primary);">5</div><div class="metric-n"><span class="badge b-demo">DEMO DATA</span></div></div>
+        <div class="card metric"><div class="metric-l">Pending Inspections</div><div class="metric-v" style="color:var(--amber);">3</div></div>
+        <div class="card metric"><div class="metric-l">Open Issues</div><div class="metric-v" style="color:var(--red);">5</div></div>
+        <div class="card metric"><div class="metric-l">AI Observations</div><div class="metric-v">7</div></div>
+        <div class="card metric"><div class="metric-l">Properties Evaluated</div><div class="metric-v" style="color:var(--green);">4</div></div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:2fr 1fr;gap:12px;">
+        <div class="card">
+          <div class="card-hdr" style="display:flex;justify-content:space-between;align-items:center;"><h3 style="font-size:14px;font-weight:600;">Recent Activity</h3><span class="badge b-demo">DEMO DATA</span></div>
+          <div class="card-body"><div class="timeline">
+            <div class="tl-item"><div class="tl-dot blue">📷</div><div><div style="font-size:13px;font-weight:600;">AI observation added</div><div style="font-size:11px;color:var(--text3);">Kumar Residence · Today, 10:42 AM</div><span class="trust trust-ai">AI-ASSISTED</span></div></div>
+            <div class="tl-item"><div class="tl-dot green">✅</div><div><div style="font-size:13px;font-weight:600;">Inspection completed</div><div style="font-size:11px;color:var(--text3);">Priya Villa · Yesterday, 3:15 PM</div><span class="trust trust-eng">ENGINEER-REVIEWED</span></div></div>
+            <div class="tl-item"><div class="tl-dot yellow">⚠️</div><div><div style="font-size:13px;font-weight:600;">Issue reported</div><div style="font-size:11px;color:var(--text3);">Ravi Tower · Yesterday, 2:00 PM</div><span class="trust trust-self">SELF-REPORTED</span></div></div>
+            <div class="tl-item"><div class="tl-dot green">🏗️</div><div><div style="font-size:13px;font-weight:600;">Milestone completed</div><div style="font-size:11px;color:var(--text3);">Kumar Residence · 2 days ago</div></div></div>
+          </div></div>
+        </div>
+        <div class="card">
+          <div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">Quick Actions</h3></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-s" onclick="nav('projects')" style="justify-content:flex-start;">🏗️ New Project</button>
+            <button class="btn btn-s" onclick="openModal('modal-inspection')" style="justify-content:flex-start;">📷 New Inspection</button>
+            <button class="btn btn-s" onclick="openModal('modal-issue')" style="justify-content:flex-start;">⚠️ Report Issue</button>
+            <button class="btn btn-s" onclick="nav('ai')" style="justify-content:flex-start;">🤖 Analyze Image</button>
+            <button class="btn btn-s" onclick="nav('property-intel')" style="justify-content:flex-start;">🏠 Evaluate Property</button>
+            <button class="btn btn-s" onclick="nav('spatial')" style="justify-content:flex-start;">📍 View Map</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PROJECTS ═══════════ -->
+    <div id="pg-projects" class="page">
+      <div class="page-hdr" style="display:flex;justify-content:space-between;align-items:center;"><div><h2>Construction Projects</h2><p>Manage your residential construction sites.</p></div><button class="btn btn-p" onclick="openModal('modal-project')">+ New Project</button></div>
+      <div class="grid g2">
+        <div class="card proj-card" onclick="nav('project-detail')"><div class="proj-name">Kumar Residence</div><div class="proj-meta"><span>📍 Trichy</span><span>🏠 Kumar</span><span>👷 Raj</span></div><div class="progress"><div class="progress-fill" style="width:68%;background:var(--amber);"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;"><span style="color:var(--text3);">68% Complete</span><span class="badge b-red">REVIEW</span></div></div>
+        <div class="card proj-card" onclick="nav('project-detail')"><div class="proj-name">Priya Villa</div><div class="proj-meta"><span>📍 Chennai</span><span>🏠 Priya</span><span>👷 Raj</span></div><div class="progress"><div class="progress-fill" style="width:88%;background:var(--green);"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;"><span style="color:var(--text3);">88% Complete</span><span class="badge b-green">NORMAL</span></div></div>
+        <div class="card proj-card" onclick="nav('project-detail')"><div class="proj-name">Ravi Tower</div><div class="proj-meta"><span>📍 Madurai</span><span>🏠 Ravi</span><span>👷 Raj</span></div><div class="progress"><div class="progress-fill" style="width:35%;background:var(--red);"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;"><span style="color:var(--text3);">35% Complete</span><span class="badge b-yellow">ATTENTION</span></div></div>
+        <div class="card proj-card" onclick="nav('project-detail')"><div class="proj-name">Lakshmi Renovation</div><div class="proj-meta"><span>📍 Coimbatore</span><span>🏠 Lakshmi</span><span>👷 Raj</span></div><div class="progress"><div class="progress-fill" style="width:72%;background:var(--green);"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;"><span style="color:var(--text3);">72% Complete</span><span class="badge b-green">NORMAL</span></div></div>
+        <div class="card proj-card" onclick="nav('project-detail')"><div class="proj-name">Saravanan Homes</div><div class="proj-meta"><span>📍 Salem</span><span>🏠 Saravanan</span><span>👷 Raj</span></div><div class="progress"><div class="progress-fill" style="width:48%;background:var(--green);"></div></div><div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;"><span style="color:var(--text3);">48% Complete</span><span class="badge b-green">NORMAL</span></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PROJECT DETAIL ═══════════ -->
+    <div id="pg-project-detail" class="page">
+      <div class="page-hdr"><a href="#" onclick="nav('projects')" style="font-size:13px;color:var(--text2);text-decoration:none;">← Back to Projects</a><h2 style="margin-top:6px;">Kumar Residence</h2><div style="display:flex;gap:6px;margin-top:6px;"><span class="badge b-red">REVIEW</span><span class="badge b-demo">DEMO DATA</span></div></div>
+      <div class="grid g5" style="margin-bottom:20px;">
+        <div class="card metric"><div class="metric-l">Location</div><div style="font-size:13px;font-weight:600;">Trichy, TN</div></div>
+        <div class="card metric"><div class="metric-l">Stage</div><div style="font-size:13px;font-weight:600;">Roofing</div></div>
+        <div class="card metric"><div class="metric-l">Progress</div><div style="font-size:13px;font-weight:600;">68%</div></div>
+        <div class="card metric"><div class="metric-l">Est. Cost</div><div style="font-size:13px;font-weight:600;">₹45,00,000</div></div>
+        <div class="card metric"><div class="metric-l">Open Issues</div><div style="font-size:13px;font-weight:600;color:var(--red);">2</div></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="stab(this,'pd-overview')">Overview</div>
+        <div class="tab" onclick="stab(this,'pd-inspections')">Inspections</div>
+        <div class="tab" onclick="stab(this,'pd-photos')">Photos</div>
+        <div class="tab" onclick="stab(this,'pd-ai')">AI</div>
+        <div class="tab" onclick="stab(this,'pd-issues')">Issues</div>
+        <div class="tab" onclick="stab(this,'pd-evidence')">Evidence</div>
+        <div class="tab" onclick="stab(this,'pd-timeline')">Timeline</div>
+      </div>
+      <div id="pd-overview" class="tc" style="display:block;"><div class="card"><div class="card-body"><h3 style="font-size:15px;font-weight:600;margin-bottom:10px;">Project Overview</h3><div class="grid g3"><div><div style="font-size:11px;color:var(--text3);">Engineer</div><div style="font-size:13px;font-weight:500;">Raj Engineer</div></div><div><div style="font-size:11px;color:var(--text3);">Contractor</div><div style="font-size:13px;font-weight:500;">Suresh Contractor</div></div><div><div style="font-size:11px;color:var(--text3);">Homeowner</div><div style="font-size:13px;font-weight:500;">Kumar</div></div><div><div style="font-size:11px;color:var(--text3);">Type</div><div style="font-size:13px;font-weight:500;">Individual House</div></div><div><div style="font-size:11px;color:var(--text3);">Area</div><div style="font-size:13px;font-weight:500;">2,200 sq ft</div></div><div><div style="font-size:11px;color:var(--text3);">Quotation</div><div style="font-size:13px;font-weight:500;">₹45,00,000</div></div></div></div></div></div>
+      <div id="pd-inspections" class="tc" style="display:none;"><div class="card"><div class="card-body empty"><div style="font-size:28px;margin-bottom:6px;">📷</div><p>3 inspections recorded</p><span class="badge b-demo" style="margin-top:4px;">DEMO DATA</span></div></div></div>
+      <div id="pd-photos" class="tc" style="display:none;"><div class="card"><div class="card-body empty"><div style="font-size:28px;margin-bottom:6px;">🖼️</div><p>14 photos uploaded</p></div></div></div>
+      <div id="pd-ai" class="tc" style="display:none;"><div class="card"><div class="card-body empty"><div style="font-size:28px;margin-bottom:6px;">🤖</div><p>2 AI observations detected</p><p style="font-size:11px;color:var(--text3);margin-top:2px;">Possible surface crack · Possible dampness</p><span class="trust trust-ai" style="margin-top:6px;">AI-ASSISTED</span></div></div></div>
+      <div id="pd-issues" class="tc" style="display:none;"><div class="card"><div class="card-body empty"><div style="font-size:28px;margin-bottom:6px;">⚠️</div><p>2 open issues</p></div></div></div>
+      <div id="pd-evidence" class="tc" style="display:none;"><div class="card"><div class="card-body empty"><div style="font-size:28px;margin-bottom:6px;">🛡️</div><p>Evidence timeline available</p></div></div></div>
+      <div id="pd-timeline" class="tc" style="display:none;"><div class="card"><div class="card-body"><div class="timeline">
+        <div class="tl-item"><div class="tl-dot blue">📷</div><div><div style="font-size:13px;font-weight:600;">Inspection completed</div><div style="font-size:11px;color:var(--text3);">28 Aug 2026 · Raj Engineer</div></div></div>
+        <div class="tl-item"><div class="tl-dot yellow">⚠️</div><div><div style="font-size:13px;font-weight:600;">Issue reported — Dampness</div><div style="font-size:11px;color:var(--text3);">25 Aug 2026 · Kumar (Homeowner)</div></div></div>
+        <div class="tl-item"><div class="tl-dot green">✅</div><div><div style="font-size:13px;font-weight:600;">Milestone — Brickwork completed</div><div style="font-size:11px;color:var(--text3);">20 Aug 2026</div></div></div>
+      </div></div></div></div>
+    </div>
+
+    <!-- ═══════════ SPATIAL INTELLIGENCE ═══════════ -->
+    <div id="pg-spatial" class="page">
+      <div class="page-hdr"><h2>Spatial Intelligence</h2><p>Location-aware construction site intelligence.</p></div>
+      <div class="card" style="overflow:hidden;"><div class="map-area">
+        <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:1;"><div style="font-size:40px;">🗺️</div><div style="font-size:16px;font-weight:600;color:var(--text2);">Spatial Intelligence Map</div><span class="badge b-demo">DEMO DATA</span></div>
+        <div class="map-marker" style="top:35%;left:55%;background:var(--red);" title="Kumar Residence — Trichy">K</div>
+        <div class="map-marker" style="top:25%;left:70%;background:var(--green);" title="Priya Villa — Chennai">P</div>
+        <div class="map-marker" style="top:55%;left:45%;background:var(--amber);" title="Ravi Tower — Madurai">R</div>
+        <div class="map-marker" style="top:40%;left:35%;background:var(--green);" title="Lakshmi Renovation — Coimbatore">L</div>
+        <div class="map-marker" style="top:48%;left:60%;background:var(--green);" title="Saravanan Homes — Salem">S</div>
+      </div></div>
+    </div>
+
+    <!-- ═══════════ INSPECTIONS ═══════════ -->
+    <div id="pg-inspections" class="page">
+      <div class="page-hdr" style="display:flex;justify-content:space-between;align-items:center;"><div><h2>Site Inspections</h2><p>Record and review construction site inspections.</p></div><button class="btn btn-p" onclick="openModal('modal-inspection')">+ New Inspection</button></div>
+      <div class="card"><div class="card-body table-wrap"><table>
+        <thead><tr><th>Inspection</th><th>Project</th><th>Engineer</th><th>Date</th><th>Status</th><th>AI</th></tr></thead>
+        <tbody>
+          <tr><td>INS-042</td><td>Kumar Residence</td><td>Raj Engineer</td><td>28 Aug 2026</td><td><span class="badge b-green">Completed</span></td><td><span class="badge b-yellow">2 obs</span> <span class="trust trust-ai">AI-ASSISTED</span></td></tr>
+          <tr><td>INS-041</td><td>Priya Villa</td><td>Raj Engineer</td><td>27 Aug 2026</td><td><span class="badge b-green">Completed</span></td><td><span class="badge b-gray">0 obs</span></td></tr>
+          <tr><td>INS-040</td><td>Ravi Tower</td><td>Raj Engineer</td><td>20 Aug 2026</td><td><span class="badge b-green">Completed</span></td><td><span class="badge b-yellow">1 obs</span> <span class="trust trust-ai">AI-ASSISTED</span></td></tr>
+        </tbody>
+      </table><p style="margin-top:8px;"><span class="badge b-demo">DEMO DATA</span></p></div></div>
+    </div>
+
+    <!-- ═══════════ AI INTELLIGENCE ═══════════ -->
+    <div id="pg-ai" class="page">
+      <div class="page-hdr"><h2>AI Intelligence</h2><p>AI-assisted construction image analysis and project risk assessment.</p></div>
+      <div class="card" style="margin-bottom:12px;"><div class="card-hdr"><h3 style="font-size:15px;font-weight:600;">Construction Image Analysis</h3></div><div class="card-body">
+        <div style="border:2px dashed var(--border);border-radius:8px;padding:40px;text-align:center;margin-bottom:12px;"><div style="font-size:28px;margin-bottom:6px;">📸</div><p style="font-size:13px;color:var(--text2);">Upload Construction Photo</p><p style="font-size:11px;color:var(--text3);margin-top:2px;">Drag and drop or click to upload</p></div>
+        <button class="btn btn-p" style="width:100%;" onclick="showToast('AI analysis requires API key — see AI Intelligence setup')">Analyze Image</button>
+        <div class="alert-bar alert-warn" style="margin-top:10px;">🤖 <strong>AI service not connected</strong> — Set AI_API_KEY to enable analysis. Prototype interface shown.</div>
+      </div></div>
+      <div class="grid g3">
+        <div class="card"><div class="card-body"><div class="metric-l">AI Observations</div><div class="metric-v">7</div><div class="metric-n"><span class="badge b-demo">DEMO DATA</span></div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Pending Review</div><div class="metric-v" style="color:var(--amber);">3</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Confirmed</div><div class="metric-v" style="color:var(--green);">4</div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ COST INTELLIGENCE ═══════════ -->
+    <div id="pg-cost" class="page">
+      <div class="page-hdr"><h2>Construction Cost Intelligence</h2><p>Location-aware construction cost estimation.</p></div>
+      <div class="alert-bar alert-warn">⚠️ <strong>INDICATIVE PROTOTYPE ESTIMATE</strong> — Not based on verified market data. Actual costs vary by materials, labor, design and market conditions.</div>
+      <div class="card"><div class="card-hdr"><h3 style="font-size:15px;font-weight:600;">Estimate Construction Cost</h3></div><div class="card-body">
+        <div class="grid g3" style="margin-bottom:12px;">
+          <div class="fg"><label class="fl">Location</label><select class="fs"><option>Chennai</option><option>Trichy</option><option>Coimbatore</option><option>Madurai</option></select></div>
+          <div class="fg"><label class="fl">Built-up Area (sq.ft)</label><input type="number" class="fi" value="2000"></div>
+          <div class="fg"><label class="fl">Construction Type</label><select class="fs"><option>Individual House</option><option>Villa</option><option>Apartment</option></select></div>
+        </div>
+        <div class="grid g3" style="margin-bottom:12px;">
+          <div class="fg"><label class="fl">Floors</label><input type="number" class="fi" value="2"></div>
+          <div class="fg"><label class="fl">Quality</label><select class="fs"><option>Economy</option><option selected>Standard</option><option>Premium</option></select></div>
+          <div class="fg"><label class="fl">Stage</label><select class="fs"><option>Planning</option><option>Foundation</option><option>Structure</option><option selected>Roofing</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="document.getElementById('cost-result').style.display='block';document.getElementById('cost-result').scrollIntoView({behavior:'smooth',block:'center'});">Generate Estimate</button>
+        <div id="cost-result" style="margin-top:14px;display:none;"><div style="padding:14px;background:var(--green-bg);border:1px solid rgba(5,150,105,.2);border-radius:8px;">
+          <p style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:6px;">PROTOTYPE ESTIMATE — <span class="badge b-demo" style="vertical-align:middle;">CALCULATED</span></p>
+          <div class="grid g3"><div><div style="font-size:11px;color:var(--text3);">Low Estimate</div><div style="font-size:17px;font-weight:700;">₹33,60,000</div></div><div><div style="font-size:11px;color:var(--text3);">Typical</div><div style="font-size:17px;font-weight:700;color:var(--primary);">₹39,60,000</div></div><div><div style="font-size:11px;color:var(--text3);">High Estimate</div><div style="font-size:17px;font-weight:700;">₹47,52,000</div></div></div>
+          <p style="font-size:9px;color:var(--text3);margin-top:6px;">Indicative prototype estimate based on rule-based calculation. Not a quotation or market price.</p>
+        </div></div>
+      </div></div>
+    </div>
+
+    <!-- ═══════════ QUOTATIONS ═══════════ -->
+    <div id="pg-quotations" class="page">
+      <div class="page-hdr" style="display:flex;justify-content:space-between;align-items:center;"><div><h2>Quotation Intelligence</h2><p>Compare real engineer quotations side by side.</p></div><button class="btn btn-p" onclick="showToast('Upload feature — connect to backend')">Upload Quotation</button></div>
+      <div class="card" style="margin-bottom:12px;border-left:4px solid var(--green);"><div class="card-body"><p style="font-size:12px;font-weight:600;color:var(--green);">REAL QUOTATION DATA</p><p style="font-size:11px;color:var(--text3);margin-top:2px;">Extracted from actual engineer quotation PDFs. Clearly distinguished from demo data.</p></div></div>
+      <div class="grid g2">
+        <div class="card"><div class="card-hdr"><h3 style="font-size:13px;font-weight:600;">Quotation 1 — ₹5,80,000</h3></div><div class="card-body"><p style="font-size:11px;color:var(--text3);">Engineer: B. Saravanan · Madurai</p><p style="font-size:12px;color:var(--text2);margin-top:6px;">Scope: Brickwork, wall plastering, plumbing, woodwork, painting</p><p style="font-size:12px;color:var(--text2);">15 line items · Materials + Labour</p><span class="badge b-real" style="margin-top:6px;">REAL DATA</span></div></div>
+        <div class="card"><div class="card-hdr"><h3 style="font-size:13px;font-weight:600;">Quotation 2 — ₹15,00,000</h3></div><div class="card-body"><p style="font-size:11px;color:var(--text3);">2,000 sq.ft house construction</p><p style="font-size:12px;color:var(--text2);margin-top:6px;">Scope: Foundation through finishing (15 major categories)</p><p style="font-size:12px;color:var(--text2);">Rate: ₹7,500/sq.ft (all-inclusive)</p><span class="badge b-real" style="margin-top:6px;">REAL DATA</span></div></div>
+        <div class="card"><div class="card-hdr"><h3 style="font-size:13px;font-weight:600;">Quotation 3 — ₹1,80,000</h3></div><div class="card-body"><p style="font-size:11px;color:var(--text3);">Renovation scope</p><p style="font-size:12px;color:var(--text2);margin-top:6px;">Electrical, plumbing, woodwork, painting</p><p style="font-size:12px;color:var(--text2);">Detailed line-item breakdown with quantities</p><span class="badge b-real" style="margin-top:6px;">REAL DATA</span></div></div>
+        <div class="card"><div class="card-hdr"><h3 style="font-size:13px;font-weight:600;">Quotation 4 — ₹11,64,000</h3></div><div class="card-body"><p style="font-size:11px;color:var(--text3);">Engineer: Raju · Vellore · 1,455 sq.ft</p><p style="font-size:12px;color:var(--text2);margin-top:6px;">Rate: ₹8,003/sq.ft · All major categories</p><p style="font-size:12px;color:var(--text2);">Terms and payment schedule included</p><span class="badge b-real" style="margin-top:6px;">REAL DATA</span></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PROPERTY INTELLIGENCE ═══════════ -->
+    <div id="pg-property-intel" class="page">
+      <div class="page-hdr"><h2>Property Intelligence</h2><p>Evaluate properties before purchase — or monitor your own.</p></div>
+      <div class="grid g2" style="margin-bottom:16px;">
+        <div class="card" style="border:2px solid rgba(37,99,235,.2);cursor:pointer;" onclick="nav('projects')"><div class="card-body" style="padding:20px;"><div style="font-size:28px;margin-bottom:6px;">🏗️</div><h3 style="font-size:17px;font-weight:600;margin-bottom:3px;">BUILD</h3><p style="font-size:13px;color:var(--text2);">Manage a property that is being constructed.</p><p style="font-size:11px;color:var(--primary);margin-top:6px;">Plan → Estimate → Quote → Construct → Inspect → Monitor → Resolve</p></div></div>
+        <div class="card" style="border:2px solid rgba(5,150,105,.2);cursor:pointer;" onclick="nav('property-buy')"><div class="card-body" style="padding:20px;"><div style="font-size:28px;margin-bottom:6px;">🏠</div><h3 style="font-size:17px;font-weight:600;margin-bottom:3px;">BUY</h3><p style="font-size:13px;color:var(--text2);">Evaluate a ready-built property before making a decision.</p><p style="font-size:11px;color:var(--green);margin-top:6px;">Locate → Inspect → Analyze → Verify → Review → Decide</p></div></div>
+      </div>
+      <div class="alert-bar alert-warn">⚠️ BuildMe provides decision-support and does not guarantee property safety or value. Always consult qualified professionals.</div>
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;">Properties Under Evaluation</h3>
+      <div class="grid g2">
+        <div class="card"><div class="card-body"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:13px;font-weight:600;">Green Valley Residence</span><span class="badge b-yellow">MODERATE</span></div><p style="font-size:11px;color:var(--text3);">📍 Coimbatore · 🏠 House · 2,200 sqft · ₹65,00,000</p><div class="progress"><div class="progress-fill" style="width:42%;background:var(--amber);"></div></div><p style="font-size:10px;color:var(--text3);margin-top:3px;">Condition: 42/100 · 4 issues · <span class="badge b-demo">DEMO DATA</span></p></div></div>
+        <div class="card"><div class="card-body"><div style="display:flex;justify-content:space-between;margin-bottom:3px;"><span style="font-size:13px;font-weight:600;">Lakshmi's Apartment</span><span class="badge b-green">LOWER CONCERN</span></div><p style="font-size:11px;color:var(--text3);">📍 Chennai · 🏢 Apt · 1,400 sqft · ₹82,00,000</p><div class="progress"><div class="progress-fill" style="width:18%;background:var(--green);"></div></div><p style="font-size:10px;color:var(--text3);margin-top:3px;">Condition: 18/100 · 1 issue · <span class="badge b-demo">DEMO DATA</span></p></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PROPERTY BUY DETAIL ═══════════ -->
+    <div id="pg-property-buy" class="page">
+      <div class="page-hdr"><a href="#" onclick="nav('property-intel')" style="font-size:13px;color:var(--text2);text-decoration:none;">← Back to Property Intelligence</a><h2 style="margin-top:6px;">Property Evaluation — BUY</h2><p>Evaluate a ready-built property before purchase.</p></div>
+      <div class="alert-bar alert-info">📋 This is for someone considering buying an existing house. BuildMe helps identify what to check — it does not replace professional inspections.</div>
+      <div class="grid g2" style="margin-bottom:16px;">
+        <div class="card"><div class="card-body"><div class="metric-l">Property</div><div style="font-size:15px;font-weight:600;">Green Valley Residence</div><p style="font-size:11px;color:var(--text3);margin-top:2px;">Independent House · Coimbatore · 2,200 sqft</p></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Asking Price</div><div style="font-size:15px;font-weight:600;">₹65,00,000</div><p style="font-size:11px;color:var(--text3);margin-top:2px;">Rate: ₹2,955/sqft <span class="badge b-demo" style="margin-left:4px;">DEMO DATA</span></p></div></div>
+      </div>
+      <div class="grid g3" style="margin-bottom:16px;">
+        <div class="card"><div class="card-body"><div class="metric-l">Condition Score</div><div style="font-size:24px;font-weight:700;color:var(--amber);">42/100</div><p style="font-size:10px;color:var(--amber);">Moderate Visible Concern</p></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Photos Uploaded</div><div style="font-size:24px;font-weight:700;">14</div><p style="font-size:10px;color:var(--text3);">Across 6 categories</p></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Checklist</div><div style="font-size:24px;font-weight:700;">70%</div><p style="font-size:10px;color:var(--text3);">14/20 items completed</p></div></div>
+      </div>
+      <div class="card" style="margin-bottom:12px;"><div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">Attention Items</h3></div><div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid rgba(220,38,38,.15);border-radius:6px;background:var(--red-bg);"><span style="font-size:10px;font-weight:600;color:var(--red);">🔴 HIGH</span><span style="font-size:12px;">Possible dampness detected — bathroom area</span><span class="trust trust-ai">AI-ASSISTED</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid rgba(217,119,6,.15);border-radius:6px;background:var(--amber-bg);"><span style="font-size:10px;font-weight:600;color:var(--amber);">🟡 MEDIUM</span><span style="font-size:12px;">Visible wall crack — exterior north wall</span><span class="trust trust-ai">AI-ASSISTED</span></div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--border);border-radius:6px;"><span style="font-size:10px;font-weight:600;color:var(--amber);">🟡 MEDIUM</span><span style="font-size:12px;">Roof inspection not completed</span></div>
+        </div>
+      </div></div>
+      <div class="card"><div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">Due-Diligence Checklist</h3></div><div class="card-body">
+        <div class="grid g2">
+          <div><h4 style="font-size:12px;font-weight:600;margin-bottom:6px;">Structural</h4>
+            <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;"><div>✅ Visible cracks checked</div><div>✅ Walls inspected</div><div>⬜ Columns/beams visually inspected</div><div>⬜ Roof inspected</div></div></div>
+          <div><h4 style="font-size:12px;font-weight:600;margin-bottom:6px;">Water / Damp</h4>
+            <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;"><div>✅ Dampness checked</div><div>⬜ Leakage checked</div><div>⬜ Bathroom waterproofing checked</div><div>⬜ Terrace checked</div></div></div>
+          <div><h4 style="font-size:12px;font-weight:600;margin-bottom:6px;">Documents</h4>
+            <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;"><div>✅ Ownership documents reviewed</div><div>✅ Approval documents reviewed</div><div>⬜ Property tax documents</div><div>⬜ Relevant certificates</div></div></div>
+          <div><h4 style="font-size:12px;font-weight:600;margin-bottom:6px;">Utilities</h4>
+            <div style="font-size:12px;display:flex;flex-direction:column;gap:4px;"><div>✅ Electrical panel checked</div><div>✅ Water supply checked</div><div>⬜ Drainage checked</div><div>⬜ Plumbing leakage checked</div></div></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ═══════════ ISSUES & EVIDENCE ═══════════ -->
+    <div id="pg-evidence" class="page">
+      <div class="page-hdr"><h2>Issues & Evidence</h2><p>A shared evidence-based record for homeowners, engineers and contractors.</p></div>
+      <div class="grid g4" style="margin-bottom:16px;">
+        <div class="card"><div class="card-body"><div class="metric-l">Open Issues</div><div class="metric-v" style="color:var(--red);">1</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Under Review</div><div class="metric-v" style="color:var(--amber);">2</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Awaiting Response</div><div class="metric-v" style="color:var(--amber);">1</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Resolved</div><div class="metric-v" style="color:var(--green);">1</div></div></div>
+      </div>
+      <div class="card" style="margin-bottom:16px;"><div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">Issue Resolution Workflow</h3></div><div class="card-body">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:11px;">
+          <span class="badge b-red">⚠️ Issue Reported</span>→<span class="badge b-blue">📷 Evidence</span>→<span class="badge b-yellow">🤖 AI Obs</span>→<span class="badge b-green">👷 Engineer</span>→<span class="badge b-yellow">🔨 Contractor</span>→<span class="badge b-blue">🏠 Homeowner</span>→<span class="badge b-green">✅ Resolution</span>
+        </div>
+      </div></div>
+      <div class="card" style="margin-bottom:10px;"><div class="card-body"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;"><span style="font-size:10px;font-family:monospace;color:var(--text3);background:var(--surface);padding:1px 5px;border-radius:3px;">BM-001</span><span style="font-size:13px;font-weight:600;">Possible dampness near bathroom wall</span><span class="badge b-yellow">UNDER REVIEW</span><span class="badge b-red">HIGH</span></div><p style="font-size:11px;color:var(--text3);">Water/Dampness · 25 Aug 2026 · Kumar (Homeowner) · 4 evidence items</p></div></div>
+      <div class="card" style="margin-bottom:10px;"><div class="card-body"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;"><span style="font-size:10px;font-family:monospace;color:var(--text3);background:var(--surface);padding:1px 5px;border-radius:3px;">BM-002</span><span style="font-size:13px;font-weight:600;">Wall crack observation — North wall</span><span class="badge b-yellow">UNDER REVIEW</span><span class="badge b-red">HIGH</span></div><p style="font-size:11px;color:var(--text3);">Structural · 24 Aug 2026 · BuildMe AI · <span class="trust trust-ai">AI-ASSISTED</span></p></div></div>
+      <div class="card" style="margin-bottom:10px;"><div class="card-body"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;"><span style="font-size:10px;font-family:monospace;color:var(--text3);background:var(--surface);padding:1px 5px;border-radius:3px;">BM-003</span><span style="font-size:13px;font-weight:600;">Material delivery delay</span><span class="badge b-green">RESOLVED</span><span class="badge b-yellow">MEDIUM</span></div><p style="font-size:11px;color:var(--text3);">Delay · 18 Aug 2026 · Suresh Contractor</p></div></div>
+      <p><span class="badge b-demo">DEMO DATA</span></p>
+    </div>
+
+    <!-- ═══════════ WORKFORCE ═══════════ -->
+    <div id="pg-workforce" class="page">
+      <div class="page-hdr"><h2>Workforce Verification</h2><p>Track worker presence and verify site attendance.</p></div>
+      <div class="alert-bar alert-warn">⚠️ <strong>Important:</strong> Location can support site-presence verification but does not independently prove that a person performed work.</div>
+      <div class="grid g4" style="margin-bottom:16px;">
+        <div class="card"><div class="card-body"><div class="metric-l">Expected Workers</div><div class="metric-v">12</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Registered</div><div class="metric-v" style="color:var(--green);">10</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Verified Check-ins</div><div class="metric-v" style="color:var(--green);">8</div></div></div>
+        <div class="card"><div class="card-body"><div class="metric-l">Discrepancies</div><div class="metric-v" style="color:var(--red);">2</div></div></div>
+      </div>
+      <div class="card"><div class="card-hdr" style="display:flex;justify-content:space-between;align-items:center;"><h3 style="font-size:14px;font-weight:600;">Worker Records</h3><button class="btn btn-p btn-sm" onclick="openModal('modal-checkin')">Worker Check-in</button></div><div class="card-body table-wrap"><table>
+        <thead><tr><th>Worker</th><th>Role</th><th>Site</th><th>Check-in</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Ramesh</td><td>Mason</td><td>Kumar Residence</td><td>8:30 AM</td><td><span class="badge b-green">Verified</span></td></tr>
+          <tr><td>Senthil</td><td>Electrician</td><td>Kumar Residence</td><td>9:00 AM</td><td><span class="badge b-green">Verified</span></td></tr>
+          <tr><td>Kumar</td><td>Plumber</td><td>Priya Villa</td><td>8:45 AM</td><td><span class="badge b-green">Verified</span></td></tr>
+          <tr><td>Mohan</td><td>Helper</td><td>Ravi Tower</td><td>—</td><td><span class="badge b-red">No Check-in</span></td></tr>
+        </tbody>
+      </table><p style="margin-top:6px;"><span class="badge b-demo">DEMO DATA</span></p></div></div>
+    </div>
+
+    <!-- ═══════════ BUSINESS & VALIDATION ═══════════ -->
+    <div id="pg-business" class="page">
+      <div class="page-hdr"><h2>Business & Validation</h2><p>Track customer validation, pricing experiments, and revenue proof.</p></div>
+      <div class="alert-bar alert-error" style="font-weight:600;">PRE-REVENUE — VALIDATION STAGE — BuildMe has NOT achieved product-market fit. No revenue, customer, or PMF figures are fabricated.</div>
+      <div class="grid g5" style="margin-bottom:16px;">
+        <div class="card metric"><div class="metric-l">Users Interviewed</div><div class="metric-v">5</div></div>
+        <div class="card metric"><div class="metric-l">Prototype Users</div><div class="metric-v">3</div></div>
+        <div class="card metric"><div class="metric-l">Active Users</div><div class="metric-v">0</div><div class="metric-n" style="color:var(--amber);">NOT YET VALIDATED</div></div>
+        <div class="card metric"><div class="metric-l">Paying Customers</div><div class="metric-v">0</div><div class="metric-n" style="color:var(--amber);">NOT YET VALIDATED</div></div>
+        <div class="card metric"><div class="metric-l">MRR</div><div class="metric-v">₹0</div><div class="metric-n">No revenue yet</div></div>
+      </div>
+      <div class="grid g2" style="margin-bottom:16px;">
+        <div class="card"><div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">Validation Funnel</h3></div><div class="card-body">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:11px;"><span class="badge b-blue" style="padding:6px 10px;">Interviews: 5</span>→<span class="badge b-yellow" style="padding:6px 10px;">Tests: 3</span>→<span class="badge b-gray" style="padding:6px 10px;">Active: 0</span>→<span class="badge b-gray" style="padding:6px 10px;">Paying: 0</span>→<span class="badge b-gray" style="padding:6px 10px;">Retained: 0</span></div>
+        </div></div>
+        <div class="card"><div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">Pricing Experiments</h3></div><div class="card-body">
+          <div style="margin-bottom:8px;"><span style="font-size:12px;font-weight:500;">Engineer Free Trial</span><span class="badge b-yellow" style="margin-left:6px;">PENDING</span></div>
+          <p style="font-size:11px;color:var(--text3);">Hypothesis: Engineers will convert after seeing value</p>
+          <div style="margin-top:10px;"><span style="font-size:12px;font-weight:500;">Homeowner Report Pricing</span><span class="badge b-yellow" style="margin-left:6px;">PENDING</span></div>
+          <p style="font-size:11px;color:var(--text3);">Hypothesis: Homeowners will pay ₹299-499 for a property report</p>
+        </div></div>
+      </div>
+      <div class="card"><div class="card-hdr"><h3 style="font-size:14px;font-weight:600;">PMF Signal Tracking</h3></div><div class="card-body">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-yellow">◐ Partial</span>Problem Severity</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-gray">○ Not Validated</span>User Activation</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-gray">○ Not Validated</span>Weekly Usage</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-gray">○ Not Validated</span>Retention</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-yellow">◐ Partial</span>Willingness to Pay</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-gray">○ Not Validated</span>Paid Conversion</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-gray">○ Not Validated</span>Referral</div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px;"><span class="badge b-gray">○ Not Validated</span>Customer Satisfaction</div>
+        </div>
+        <p style="font-size:10px;color:var(--text3);margin-top:10px;">0 of 8 PMF signals validated. BuildMe is in the early validation stage.</p>
+      </div></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app-shell -->
+
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<!-- MODALS -->
+<!-- ══════════════════════════════════════════════════════════════════════ -->
+<div id="modal-project" class="modal-bg" onclick="closeModal(this,event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><h3 style="font-size:16px;font-weight:600;">New Construction Project</h3><button onclick="closeModal(document.getElementById('modal-project'))" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);">✕</button></div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Project Name *</label><input type="text" class="fi" placeholder="e.g., Kumar Residence" id="proj-name"></div>
+      <div class="grid g2"><div class="fg"><label class="fl">City</label><input type="text" class="fi" placeholder="e.g., Trichy"></div><div class="fg"><label class="fl">State</label><input type="text" class="fi" value="Tamil Nadu"></div></div>
+      <div class="fg"><label class="fl">Homeowner Name</label><input type="text" class="fi" placeholder="e.g., Kumar"></div>
+      <div class="fg"><label class="fl">Construction Type</label><select class="fs"><option>Individual House</option><option>Villa</option><option>Apartment</option><option>Renovation</option></select></div>
+      <div class="grid g2"><div class="fg"><label class="fl">Built-up Area (sq.ft)</label><input type="number" class="fi" placeholder="e.g., 2000"></div><div class="fg"><label class="fl">Estimated Cost (₹)</label><input type="number" class="fi" placeholder="e.g., 4500000"></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-s" onclick="closeModal(document.getElementById('modal-project'))">Cancel</button><button class="btn btn-p" onclick="if(!document.getElementById('proj-name').value){alert('Please enter a project name');return;}showToast('Project created (demo)');closeModal(document.getElementById('modal-project'))">Create Project</button></div>
+  </div>
+</div>
+
+<div id="modal-inspection" class="modal-bg" onclick="closeModal(this,event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><h3 style="font-size:16px;font-weight:600;">New Inspection</h3><button onclick="closeModal(document.getElementById('modal-inspection'))" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);">✕</button></div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Project *</label><select class="fs"><option>Kumar Residence</option><option>Priya Villa</option><option>Ravi Tower</option><option>Lakshmi Renovation</option><option>Saravanan Homes</option></select></div>
+      <div class="fg"><label class="fl">Inspection Date</label><input type="date" class="fi" value="2026-08-28"></div>
+      <div class="fg"><label class="fl">Construction Stage</label><select class="fs"><option>Planning</option><option>Foundation</option><option>Structure</option><option>Brickwork</option><option>Roofing</option><option>Electrical/Plumbing</option><option>Finishing</option></select></div>
+      <div class="fg"><label class="fl">Notes</label><textarea class="ft" placeholder="Inspection notes..."></textarea></div>
+      <div class="fg"><label class="fl">Upload Photos</label><div style="border:2px dashed var(--border);border-radius:6px;padding:20px;text-align:center;cursor:pointer;"><span style="font-size:12px;color:var(--text3);">📷 Click to upload inspection photos</span></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-s" onclick="closeModal(document.getElementById('modal-inspection'))">Cancel</button><button class="btn btn-p" onclick="showToast('Inspection created (demo)');closeModal(document.getElementById('modal-inspection'))">Create Inspection</button></div>
+  </div>
+</div>
+
+<div id="modal-issue" class="modal-bg" onclick="closeModal(this,event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><h3 style="font-size:16px;font-weight:600;">Report Issue</h3><button onclick="closeModal(document.getElementById('modal-issue'))" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);">✕</button></div>
+    <div class="modal-body">
+      <div class="fg"><label class="fl">Issue Title *</label><input type="text" class="fi" placeholder="Brief description" id="issue-title"></div>
+      <div class="fg"><label class="fl">Project</label><select class="fs"><option>Kumar Residence</option><option>Priya Villa</option><option>Ravi Tower</option></select></div>
+      <div class="grid g2"><div class="fg"><label class="fl">Category</label><select class="fs"><option>Structural</option><option>Water/Dampness</option><option>Electrical</option><option>Plumbing</option><option>Material Quality</option><option>Workmanship</option><option>Delay</option></select></div><div class="fg"><label class="fl">Severity</label><select class="fs"><option>Low</option><option selected>Medium</option><option>High</option></select></div></div>
+      <div class="fg"><label class="fl">Description</label><textarea class="ft" placeholder="Detailed description..."></textarea></div>
+      <div class="fg"><label class="fl">Evidence</label><div style="border:2px dashed var(--border);border-radius:6px;padding:16px;text-align:center;cursor:pointer;"><span style="font-size:12px;color:var(--text3);">📷 Upload photos or documents</span></div></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-s" onclick="closeModal(document.getElementById('modal-issue'))">Cancel</button><button class="btn btn-p" onclick="if(!document.getElementById('issue-title').value){alert('Please enter an issue title');return;}showToast('Issue reported (demo)');closeModal(document.getElementById('modal-issue'))">Submit Issue</button></div>
+  </div>
+</div>
+
+<div id="modal-checkin" class="modal-bg" onclick="closeModal(this,event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hdr"><h3 style="font-size:16px;font-weight:600;">Worker Check-in</h3><button onclick="closeModal(document.getElementById('modal-checkin'))" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text3);">✕</button></div>
+    <div class="modal-body">
+      <div class="alert-bar alert-warn">⚠️ Location supports site-presence verification but does not independently prove work performed.</div>
+      <div class="fg"><label class="fl">Worker Name *</label><input type="text" class="fi" placeholder="e.g., Ramesh" id="worker-name"></div>
+      <div class="grid g2"><div class="fg"><label class="fl">Role</label><select class="fs"><option>Mason</option><option>Electrician</option><option>Plumber</option><option>Carpenter</option><option>Helper</option></select></div><div class="fg"><label class="fl">Site</label><select class="fs"><option>Kumar Residence</option><option>Priya Villa</option><option>Ravi Tower</option></select></div></div>
+      <div class="fg"><label class="fl">Check-in Time</label><input type="time" class="fi" value="08:30"></div>
+    </div>
+    <div class="modal-foot"><button class="btn btn-s" onclick="closeModal(document.getElementById('modal-checkin'))">Cancel</button><button class="btn btn-p" onclick="if(!document.getElementById('worker-name').value){alert('Please enter worker name');return;}showToast('Worker checked in (demo)');closeModal(document.getElementById('modal-checkin'))">Check In</button></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script>
+function nav(page){
+  document.getElementById('landing').style.display='none';
+  document.getElementById('app-shell').style.display='block';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const t=document.getElementById('pg-'+page);
+  if(t)t.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i=>{i.classList.remove('active');if(i.dataset.page===page)i.classList.add('active');});
+  document.querySelector('.sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+}
+function stab(el,id){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tc').forEach(c=>c.style.display='none');
+  const t=document.getElementById(id);if(t)t.style.display='block';
+}
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(el,ev){if(ev&&ev.target!==ev.currentTarget)return;el.classList.remove('show');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-bg.show').forEach(m=>m.classList.remove('show'));});
+</script>
+<!-- CEDI Demo Overlay -->
+<div id="demo-overlay" class="demo-overlay">
+  <div class="demo-nav">
+    <div class="demo-nav-left">
+      <button class="demo-btn demo-btn-s" onclick="closeDemo()" style="padding:6px 12px;font-size:12px;">✕ Exit</button>
+      <span style="font-size:15px;font-weight:700;">🏗️ BuildMe Demo</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span id="demo-step-label" class="demo-step-label">Step 1 / 9</span>
+      <div class="demo-progress"><div id="demo-progress-fill" class="demo-progress-fill" style="width:11%;"></div></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="demo-btn demo-btn-s" id="demo-prev" onclick="demoNav(-1)" style="padding:6px 14px;font-size:12px;">← Back</button>
+      <button class="demo-btn demo-btn-p" id="demo-next" onclick="demoNav(1)" style="padding:6px 14px;font-size:12px;">Next →</button>
+    </div>
+  </div>
+
+  <div class="demo-body">
+    <!-- STEP 1: INTRO -->
+    <div class="demo-step active" data-step="1">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="font-size:48px;margin-bottom:12px;">🏗️</div>
+        <h1 class="demo-title" style="font-size:36px;">BuildMe</h1>
+        <p class="demo-subtitle" style="max-width:500px;margin:0 auto;">AI + Spatial Intelligence for Residential Construction & Property Decisions</p>
+      </div>
+      <div class="demo-grid demo-grid-3" style="margin-bottom:32px;">
+        <div class="demo-card" style="text-align:center;border-top:3px solid var(--primary);">
+          <div style="font-size:28px;margin-bottom:8px;">🏗️</div>
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">BUILD</h3>
+          <p style="font-size:13px;color:var(--text2);">Manage and monitor residential construction projects from planning to completion.</p>
+        </div>
+        <div class="demo-card" style="text-align:center;border-top:3px solid var(--green);">
+          <div style="font-size:28px;margin-bottom:8px;">🏠</div>
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">BUY</h3>
+          <p style="font-size:13px;color:var(--text2);">Evaluate ready-built properties before making a purchase decision.</p>
+        </div>
+        <div class="demo-card" style="text-align:center;border-top:3px solid var(--amber);">
+          <div style="font-size:28px;margin-bottom:8px;">🛡️</div>
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">TRUST</h3>
+          <p style="font-size:13px;color:var(--text2);">Create evidence-based records between homeowners, engineers and contractors.</p>
+        </div>
+      </div>
+      <div style="text-align:center;"><button class="demo-btn demo-btn-p" onclick="demoNav(1)" style="font-size:16px;padding:14px 28px;">Start 5-Minute Demo →</button></div>
+    </div>
+
+    <!-- STEP 2: CREATE PROJECT -->
+    <div class="demo-step" data-step="2">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 1 — CREATE PROJECT</span>
+      <h1 class="demo-title">Construction Project</h1>
+      <p class="demo-subtitle">BuildMe creates a digital record for the entire residential construction project.</p>
+      <div class="demo-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+          <div><h3 style="font-size:18px;font-weight:700;">Demo Residence</h3><p style="font-size:13px;color:var(--text3);margin-top:2px;">📍 Trichy, Tamil Nadu, India</p></div>
+          <span class="demo-badge-big b-red">REVIEW NEEDED</span>
+        </div>
+        <div class="demo-grid demo-grid-3">
+          <div><div style="font-size:11px;color:var(--text3);">Homeowner</div><div style="font-size:14px;font-weight:600;">Kumar S.</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Engineer</div><div style="font-size:14px;font-weight:600;">Raj Engineer</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Construction Stage</div><div style="font-size:14px;font-weight:600;">Roofing</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Built-up Area</div><div style="font-size:14px;font-weight:600;">2,200 sq ft</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Progress</div><div style="font-size:14px;font-weight:600;">68%</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Status</div><div style="font-size:14px;font-weight:600;color:var(--red);">Attention Required</div></div>
+        </div>
+        <div style="margin-top:12px;"><span class="demo-badge-big b-demo">DEMO DATA</span></div>
+      </div>
+      <div class="demo-narration">Instead of construction information being scattered across WhatsApp and personal records, BuildMe creates a centralized digital record for every project.</div>
+    </div>
+
+    <!-- STEP 3: SPATIAL INTELLIGENCE -->
+    <div class="demo-step" data-step="3">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 2 — SPATIAL INTELLIGENCE</span>
+      <h1 class="demo-title">Spatial Intelligence</h1>
+      <p class="demo-subtitle">Location is treated as part of the project intelligence rather than just an address.</p>
+      <div class="demo-card" style="overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#e0f2fe,#dbeafe,#e0e7ff);border-radius:8px;height:240px;position:relative;display:flex;align-items:center;justify-content:center;">
+          <div style="text-align:center;z-index:1;"><div style="font-size:36px;">🗺️</div><p style="font-size:14px;font-weight:600;color:var(--text2);">Interactive Map with Project Markers</p><span class="demo-badge-big b-demo">DEMO DATA</span></div>
+          <div style="position:absolute;top:40%;left:55%;width:28px;height:28px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;" title="Demo Residence">D</div>
+          <div style="position:absolute;top:30%;left:70%;width:28px;height:28px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">P</div>
+          <div style="position:absolute;top:55%;left:42%;width:28px;height:28px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;">R</div>
+        </div>
+      </div>
+      <div class="demo-grid demo-grid-3" style="margin-top:12px;">
+        <div class="demo-card"><div style="font-size:11px;color:var(--text3);">Site Location</div><div style="font-size:14px;font-weight:600;">Trichy, Tamil Nadu</div></div>
+        <div class="demo-card"><div style="font-size:11px;color:var(--text3);">Last Inspection</div><div style="font-size:14px;font-weight:600;">28 Aug 2026</div></div>
+        <div class="demo-card"><div style="font-size:11px;color:var(--text3);">Open Issues</div><div style="font-size:14px;font-weight:600;color:var(--red);">2 issues</div></div>
+      </div>
+      <div class="demo-flow"><span class="demo-flow-item">Property</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">Location</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">Site</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">Inspection</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">Issue</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">Evidence</span></div>
+      <div class="demo-narration">BuildMe uses property location as a foundation for construction intelligence — connecting spatial data with project activity.</div>
+    </div>
+
+    <!-- STEP 4: QUOTATION -->
+    <div class="demo-step" data-step="4">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 3 — QUOTATION INTELLIGENCE</span>
+      <h1 class="demo-title">Quotation Intelligence</h1>
+      <p class="demo-subtitle">BuildMe organizes construction quotations so homeowners and professionals can understand and compare project costs.</p>
+      <div class="demo-card" style="border-left:3px solid var(--green);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><h3 style="font-size:15px;font-weight:700;">Quotation 1 — ₹5,80,000</h3><span class="demo-badge-big b-real">REAL DATA</span></div>
+        <p style="font-size:12px;color:var(--text3);">Engineer: B. Saravanan · Madurai</p>
+        <p style="font-size:13px;color:var(--text2);margin-top:6px;">Scope: Brickwork, wall plastering, plumbing, woodwork, painting</p>
+        <p style="font-size:13px;color:var(--text2);">15 line items · Materials + Labour included</p>
+      </div>
+      <div class="demo-card" style="border-left:3px solid var(--green);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><h3 style="font-size:15px;font-weight:700;">Quotation 2 — ₹15,00,000</h3><span class="demo-badge-big b-real">REAL DATA</span></div>
+        <p style="font-size:12px;color:var(--text3);">2,000 sq.ft house construction</p>
+        <p style="font-size:13px;color:var(--text2);margin-top:6px;">Scope: Foundation through finishing (15 major categories)</p>
+        <p style="font-size:13px;color:var(--text2);">Rate: ₹7,500/sq.ft (all-inclusive)</p>
+      </div>
+      <div class="demo-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><h3 style="font-size:15px;font-weight:700;">Quotation 3 — ₹1,80,000</h3><span class="demo-badge-big b-real">REAL DATA</span></div>
+        <p style="font-size:12px;color:var(--text3);">Renovation scope — Electrical, plumbing, woodwork, painting</p>
+        <p style="font-size:13px;color:var(--text2);margin-top:6px;">Detailed line-item breakdown with quantities</p>
+      </div>
+      <div class="demo-narration">These are real engineer quotations extracted from actual PDF documents. BuildMe helps compare scope, pricing, and completeness across multiple quotes.</div>
+    </div>
+
+    <!-- STEP 5: INSPECTION -->
+    <div class="demo-step" data-step="5">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 4 — SITE INSPECTION</span>
+      <h1 class="demo-title">Site Inspection</h1>
+      <p class="demo-subtitle">Instead of construction information being scattered across WhatsApp and personal records, inspections create a structured project history.</p>
+      <div class="demo-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><h3 style="font-size:15px;font-weight:700;">Inspection INS-042</h3><span class="demo-badge-big b-green">COMPLETED</span></div>
+        <div class="demo-grid demo-grid-3">
+          <div><div style="font-size:11px;color:var(--text3);">Date</div><div style="font-size:13px;font-weight:600;">28 Aug 2026</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Engineer</div><div style="font-size:13px;font-weight:600;">Raj Engineer</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Stage</div><div style="font-size:13px;font-weight:600;">Roofing</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Photos</div><div style="font-size:13px;font-weight:600;">6 captured</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">AI Observations</div><div style="font-size:13px;font-weight:600;color:var(--amber);">2 detected</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Status</div><div style="font-size:13px;font-weight:600;">Reviewed by engineer</div></div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:var(--surface);border-radius:6px;display:flex;gap:8px;align-items:center;">
+          <div style="width:60px;height:45px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
+          <div style="width:60px;height:45px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
+          <div style="width:60px;height:45px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>
+          <div style="width:60px;height:45px;background:var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text3);">+3</div>
+          <span class="demo-badge-big b-demo">DEMO DATA</span>
+        </div>
+      </div>
+      <div class="demo-narration">Each inspection creates a timestamped, structured record with photos, observations, and AI-assisted analysis — replacing ad-hoc WhatsApp messages.</div>
+    </div>
+
+    <!-- STEP 6: AI -->
+    <div class="demo-step" data-step="6">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 5 — AI-ASSISTED INSPECTION</span>
+      <h1 class="demo-title">AI Intelligence</h1>
+      <p class="demo-subtitle">AI assists with visual analysis. Engineers review and confirm. BuildMe records the evidence.</p>
+      <div class="demo-flow" style="margin-bottom:20px;"><span class="demo-flow-item">📸 Photo</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">🤖 AI Analysis</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">📋 Observation</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">📊 Confidence</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">👷 Engineer Review</span></div>
+      <div class="demo-card" style="border-left:3px solid var(--amber);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span class="demo-badge-big b-yellow">AI-ASSISTED</span><span class="demo-badge-big b-red">HUMAN REVIEW RECOMMENDED</span></div>
+        <h3 style="font-size:15px;font-weight:700;margin-bottom:6px;">Possible Surface Crack Detected</h3>
+        <div class="demo-grid demo-grid-3">
+          <div><div style="font-size:11px;color:var(--text3);">Confidence</div><div style="font-size:14px;font-weight:600;">82%</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Severity</div><div style="font-size:14px;font-weight:600;color:var(--amber);">Medium</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Status</div><div style="font-size:14px;font-weight:600;">Pending Engineer Review</div></div>
+        </div>
+        <div style="margin-top:10px;padding:8px;background:var(--amber-bg);border-radius:6px;border:1px solid rgba(217,119,6,.15);">
+          <p style="font-size:11px;color:var(--amber);font-weight:500;">⚠️ AI service not connected — prototype interface shown.</p>
+          <p style="font-size:10px;color:var(--text3);margin-top:2px;">Set AI_API_KEY to enable real AI analysis. This demo shows the intended workflow.</p>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:6px;">Why did AI flag this?</h4>
+        <div style="font-size:12px;color:var(--text2);display:flex;flex-direction:column;gap:3px;">
+          <div>• Visible linear pattern on wall surface</div>
+          <div>• Contrast with surrounding surface texture</div>
+          <div>• Similarity to known surface crack patterns</div>
+        </div>
+        <p style="font-size:10px;color:var(--text3);margin-top:6px;">Prototype explanation — not actual model explainability.</p>
+      </div>
+      <div class="demo-narration">AI assists engineers by identifying possible visible issues. Every observation requires human review. BuildMe never claims AI replaces professional engineering judgment.</div>
+    </div>
+
+    <!-- STEP 7: EVIDENCE -->
+    <div class="demo-step" data-step="7">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 6 — EVIDENCE & DISPUTES</span>
+      <h1 class="demo-title">Evidence Trail</h1>
+      <p class="demo-subtitle">BuildMe does not act as a judge. It creates a shared evidence trail that helps the people involved review what happened.</p>
+      <div class="demo-card">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:12px;">Issue Resolution Workflow</h3>
+        <div class="demo-flow"><span class="demo-flow-item" style="background:rgba(220,38,38,.1);color:var(--red);">⚠️ Issue Reported</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">📷 Photo Added</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item" style="background:rgba(217,119,6,.1);color:var(--amber);">🤖 AI Observation</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item" style="background:rgba(5,150,105,.1);color:var(--green);">👷 Engineer Review</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item" style="background:rgba(217,119,6,.1);color:var(--amber);">🔨 Contractor Response</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">🏠 Homeowner Response</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item" style="background:rgba(5,150,105,.1);color:var(--green);">✅ Resolution</span></div>
+      </div>
+      <div class="demo-card">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">Example Issue</h4>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px;"><span style="font-size:10px;font-family:monospace;background:var(--surface);padding:1px 5px;border-radius:3px;">BM-001</span><span style="font-size:13px;font-weight:600;">Possible dampness near bathroom wall</span><span class="demo-badge-big b-yellow">UNDER REVIEW</span><span class="demo-badge-big b-red">HIGH</span></div>
+        <p style="font-size:12px;color:var(--text3);">Water/Dampness · 25 Aug 2026 · Kumar (Homeowner) · 4 evidence items</p>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+          <div style="padding:6px 10px;background:var(--surface);border-radius:6px;font-size:12px;"><span style="font-weight:600;">Homeowner:</span> "I noticed dampness near the shower area." <span class="demo-badge-big b-demo" style="font-size:8px;">SELF-REPORTED</span></div>
+          <div style="padding:6px 10px;background:var(--green-bg);border-radius:6px;font-size:12px;"><span style="font-weight:600;">Engineer:</span> "Will inspect during next site visit." <span class="demo-badge-big b-demo" style="font-size:8px;">ENGINEER-REVIEWED</span></div>
+          <div style="padding:6px 10px;background:var(--amber-bg);border-radius:6px;font-size:12px;"><span style="font-weight:600;">Contractor:</span> "Waterproofing done as per specification." <span class="demo-badge-big b-demo" style="font-size:8px;">CONTRACTOR RESPONSE</span></div>
+        </div>
+      </div>
+      <div class="demo-narration">Every piece of information clearly indicates its source — self-reported, photo-supported, AI-assisted, engineer-reviewed, or contractor response. BuildMe never determines who is right.</div>
+    </div>
+
+    <!-- STEP 8: WORKFORCE -->
+    <div class="demo-step" data-step="8">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 7 — WORKFORCE VERIFICATION</span>
+      <h1 class="demo-title">Workforce Verification</h1>
+      <p class="demo-subtitle">Location-supported check-ins can help identify inconsistencies, but GPS alone does not prove that a person actually performed work.</p>
+      <div class="demo-card" style="border-left:3px solid var(--amber);">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span class="demo-badge-big b-yellow">DEMO DATA</span><span class="demo-badge-big b-red">DISCREPANCY DETECTED</span></div>
+        <div class="demo-grid demo-grid-3">
+          <div><div style="font-size:11px;color:var(--text3);">Expected Workers</div><div style="font-size:20px;font-weight:700;">12</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Check-ins</div><div style="font-size:20px;font-weight:700;color:var(--green);">8</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Discrepancies</div><div style="font-size:20px;font-weight:700;color:var(--red);">2</div></div>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">Worker Check-in Records</h4>
+        <div style="font-size:12px;">
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);"><span>Ramesh · Mason</span><span style="color:var(--green);font-weight:600;">✅ Verified 8:30 AM</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);"><span>Senthil · Electrician</span><span style="color:var(--green);font-weight:600;">✅ Verified 9:00 AM</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);"><span>Kumar · Plumber</span><span style="color:var(--green);font-weight:600;">✅ Verified 8:45 AM</span></div>
+          <div style="display:flex;justify-content:space-between;padding:6px 0;"><span>Mohan · Helper</span><span style="color:var(--red);font-weight:600;">❌ No Check-in</span></div>
+        </div>
+        <div style="margin-top:8px;"><span class="demo-badge-big b-demo">DEMO DATA</span></div>
+      </div>
+      <div class="demo-card" style="background:var(--amber-bg);border-color:rgba(217,119,6,.2);">
+        <p style="font-size:12px;color:var(--amber);font-weight:600;">⚠️ Important: Location can support site-presence verification but does not independently prove that a person performed work.</p>
+      </div>
+      <div class="demo-narration">BuildMe records check-in data as a verification signal — not proof of work performed. This creates transparency without making unsupported claims.</div>
+    </div>
+
+    <!-- STEP 9: BUY JOURNEY -->
+    <div class="demo-step" data-step="9">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 8 — READY-BUILT PROPERTY</span>
+      <h1 class="demo-title">BuildMe for Property Buyers</h1>
+      <p class="demo-subtitle">BuildMe can also help someone evaluate a ready-built house before making a purchase decision.</p>
+      <div class="demo-flow" style="margin-bottom:16px;"><span class="demo-flow-item">🏠 Property</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">📍 Location</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">📷 Photos</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">🤖 AI Observations</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">✅ Checklist</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">🔴 Attention Items</span><span class="demo-flow-arrow">↓</span><span class="demo-flow-item">👷 Engineer Review</span></div>
+      <div class="demo-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;"><h3 style="font-size:15px;font-weight:700;">Green Valley Residence</h3><span class="demo-badge-big b-yellow">MODERATE CONCERN</span></div>
+        <div class="demo-grid demo-grid-3">
+          <div><div style="font-size:11px;color:var(--text3);">Type</div><div style="font-size:13px;font-weight:600;">Independent House</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Location</div><div style="font-size:13px;font-weight:600;">Coimbatore</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Area</div><div style="font-size:13px;font-weight:600;">2,200 sq ft</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Condition Score</div><div style="font-size:13px;font-weight:600;color:var(--amber);">42/100</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Photos</div><div style="font-size:13px;font-weight:600;">14 uploaded</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Checklist</div><div style="font-size:13px;font-weight:600;">70% complete</div></div>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:6px;">Attention Items</h4>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid rgba(220,38,38,.15);border-radius:6px;background:var(--red-bg);font-size:12px;"><span style="font-weight:600;color:var(--red);">🔴 HIGH</span>Possible dampness detected — bathroom area <span class="demo-badge-big b-yellow" style="font-size:8px;">AI-ASSISTED</span></div>
+          <div style="display:flex;align-items:center;gap:6px;padding:6px 8px;border:1px solid rgba(217,119,6,.15);border-radius:6px;background:var(--amber-bg);font-size:12px;"><span style="font-weight:600;color:var(--amber);">🟡 MEDIUM</span>Visible wall crack — exterior north wall <span class="demo-badge-big b-yellow" style="font-size:8px;">AI-ASSISTED</span></div>
+        </div>
+      </div>
+      <div class="demo-narration">The buyer gets a structured assessment with AI-assisted observations, a due-diligence checklist, and clear attention items — helping them make a more informed decision.</div>
+    </div>
+
+    <!-- STEP 10: BUSINESS -->
+    <div class="demo-step" data-step="10">
+      <span class="demo-badge-big b-blue" style="margin-bottom:8px;">STEP 9 — BUSINESS VALIDATION</span>
+      <h1 class="demo-title">Business Validation</h1>
+      <p class="demo-subtitle">BuildMe is currently in the validation stage. We do not claim product-market fit or revenue.</p>
+      <div class="demo-card" style="background:var(--red-bg);border-color:rgba(220,38,38,.15);">
+        <p style="font-size:13px;color:var(--red);font-weight:700;">PRE-REVENUE — VALIDATION STAGE</p>
+        <p style="font-size:12px;color:var(--text3);margin-top:2px;">No revenue, customer, or PMF figures are fabricated.</p>
+      </div>
+      <div class="demo-card">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">Validation Progress</h4>
+        <div class="demo-flow"><span class="demo-flow-item">Problem</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Prototype</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Pilot</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Willingness to Pay</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">First Customer</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Retention</span></div>
+        <div class="demo-grid demo-grid-3" style="margin-top:10px;">
+          <div><div style="font-size:11px;color:var(--text3);">Users Interviewed</div><div style="font-size:16px;font-weight:700;">5</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Prototype Tested</div><div style="font-size:16px;font-weight:700;">3</div></div>
+          <div><div style="font-size:11px;color:var(--text3);">Paying Customers</div><div style="font-size:16px;font-weight:700;color:var(--amber);">0 <span style="font-size:10px;font-weight:400;">NOT YET VALIDATED</span></div></div>
+        </div>
+      </div>
+      <div class="demo-card">
+        <h4 style="font-size:13px;font-weight:600;margin-bottom:8px;">Proposed Revenue Models</h4>
+        <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;">
+          <div style="padding:6px 10px;background:var(--surface);border-radius:6px;">👷 <strong>Engineer Subscription</strong> — Monthly SaaS for multi-site management</div>
+          <div style="padding:6px 10px;background:var(--surface);border-radius:6px;">🏠 <strong>Property Reports</strong> — Per-report pricing for property evaluation</div>
+          <div style="padding:6px 10px;background:var(--surface);border-radius:6px;">🏢 <strong>Enterprise Services</strong> — Future offering for large portfolios</div>
+        </div>
+        <div style="margin-top:6px;"><span class="demo-badge-big b-demo">PROPOSED — NOT YET VALIDATED</span></div>
+      </div>
+      <div class="demo-narration">BuildMe is transparent about what has been validated and what is still being tested. We will not claim traction until customers actually pay.</div>
+    </div>
+
+    <!-- STEP 11: FINAL -->
+    <div class="demo-step" data-step="11">
+      <div style="text-align:center;margin-bottom:32px;">
+        <div style="font-size:48px;margin-bottom:12px;">🏗️</div>
+        <h1 class="demo-title" style="font-size:36px;">BuildMe</h1>
+        <p class="demo-subtitle" style="max-width:500px;margin:0 auto;">One Platform. Two Journeys.</p>
+      </div>
+      <div class="demo-grid demo-grid-2" style="margin-bottom:24px;">
+        <div class="demo-card" style="border-left:4px solid var(--primary);">
+          <h3 style="font-size:17px;font-weight:700;color:var(--primary);margin-bottom:8px;">🏗️ BUILD</h3>
+          <div class="demo-flow" style="margin:0;"><span class="demo-flow-item">Plan</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Estimate</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Quote</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Construct</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Inspect</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Monitor</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Resolve</span></div>
+        </div>
+        <div class="demo-card" style="border-left:4px solid var(--green);">
+          <h3 style="font-size:17px;font-weight:700;color:var(--green);margin-bottom:8px;">🏠 BUY</h3>
+          <div class="demo-flow" style="margin:0;"><span class="demo-flow-item">Locate</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Inspect</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Analyze</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Verify</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Review</span><span class="demo-flow-arrow">→</span><span class="demo-flow-item">Decide</span></div>
+        </div>
+      </div>
+      <div class="demo-card" style="text-align:center;">
+        <p style="font-size:13px;color:var(--text3);margin-bottom:10px;">Powered by</p>
+        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;"><span class="demo-badge-big b-blue" style="font-size:12px;padding:6px 14px;">🤖 AI / ML</span><span class="demo-badge-big" style="font-size:12px;padding:6px 14px;background:var(--amber-bg);color:var(--amber);">📍 Spatial Intelligence</span><span class="demo-badge-big" style="font-size:12px;padding:6px 14px;background:var(--green-bg);color:var(--green);">🛡️ Evidence</span><span class="demo-badge-big" style="font-size:12px;padding:6px 14px;background:var(--surface);color:var(--text2);">👷 Human Expertise</span></div>
+      </div>
+      <div style="text-align:center;margin-top:32px;">
+        <p style="font-size:14px;color:var(--text2);margin-bottom:16px;">BuildMe does not replace professional engineering judgment.<br>AI assists. Engineers review. BuildMe records the evidence.</p>
+        <button class="demo-btn demo-btn-p" onclick="closeDemo()" style="font-size:16px;padding:14px 28px;">Exit Demo → Explore BuildMe</button>
+      </div>
+    </div>
+
+  </div><!-- /demo-body -->
+</div><!-- /demo-overlay -->
+
+<script>
+let demoStep=1;const demoTotal=11;
+function openDemo(){document.getElementById('demo-overlay').classList.add('show');demoStep=1;updateDemo();}
+function closeDemo(){document.getElementById('demo-overlay').classList.remove('show');}
+function demoNav(dir){demoStep=Math.max(1,Math.min(demoTotal,demoStep+dir));updateDemo();}
+function updateDemo(){document.querySelectorAll('.demo-step').forEach(s=>s.classList.remove('active'));const s=document.querySelector('[data-step="'+demoStep+'"]');if(s)s.classList.add('active');document.getElementById('demo-step-label').textContent='Step '+demoStep+' / '+demoTotal;document.getElementById('demo-progress-fill').style.width=(demoStep/demoTotal*100)+'%';document.getElementById('demo-prev').style.display=demoStep===1?'none':'inline-flex';document.getElementById('demo-next').textContent=demoStep===demoTotal?'Finish':'Next →';document.getElementById('demo-next').onclick=demoStep===demoTotal?closeDemo:()=>demoNav(1);}
+</script>
+</body>
+</html>
