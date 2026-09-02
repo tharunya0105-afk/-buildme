@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as unknown as {
 
 let _db: PrismaClient | undefined;
 
-export function getDb(): PrismaClient {
+function getOrCreateClient(): PrismaClient {
   if (!_db) {
     _db = globalForPrisma.prisma ?? new PrismaClient({
       log:
@@ -19,9 +19,15 @@ export function getDb(): PrismaClient {
   return _db;
 }
 
-// Backward-compatible lazy export — connects only when first accessed at runtime
-export const db = new Proxy({} as PrismaClient, {
-  get(_, prop) {
-    return (getDb() as any)[prop];
+// Lazy proxy: db.user.findUnique({}) → getOrCreateClient().user.findUnique({})
+// Nothing happens at import time — connection opens on first real query.
+export const db: PrismaClient = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getOrCreateClient();
+    const value = Reflect.get(client, prop, receiver);
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+    return value;
   },
 });
