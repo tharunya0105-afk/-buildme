@@ -15,9 +15,10 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Skip ESLint during build
-  eslint: {
-    ignoreDuringBuilds: true,
+  // Ensure the SQLite database file is bundled into serverless functions on Vercel
+  outputFileTracingIncludes: {
+    "/**": ["./prisma/dev.db"],
+    "/api/**/*": ["./prisma/dev.db"],
   },
 };
 

@@ -1,10 +1,9 @@
 {
   "framework": "nextjs",
-  "buildCommand": "npx prisma generate && npx prisma db push --accept-data-loss && next build",
+  "buildCommand": "npx prisma generate && next build",
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "env": {
-    "DATABASE_URL": "file:./dev.db",
     "NEXTAUTH_SECRET": "buildme-local-development-secret-change-in-production"
   }
 }
