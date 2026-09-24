@@ -17,7 +17,8 @@ const nextConfig: NextConfig = {
   },
   // Ensure the SQLite database file is bundled into serverless functions on Vercel
   outputFileTracingIncludes: {
-    "/**": ["./prisma/dev.db"],
+    "/*": ["./prisma/dev.db"],
+    "/**/*": ["./prisma/dev.db"],
     "/api/**/*": ["./prisma/dev.db"],
   },
 };

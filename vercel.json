@@ -4,6 +4,8 @@
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "env": {
-    "NEXTAUTH_SECRET": "buildme-local-development-secret-change-in-production"
+    "NEXTAUTH_SECRET": "buildme-local-development-secret-change-in-production",
+    "NEXTAUTH_URL": "https://buildme-tau.vercel.app",
+    "DATABASE_URL": "file:/tmp/dev.db"
   }
 }

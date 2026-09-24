@@ -9,7 +9,7 @@ const globalForPrisma = globalThis as unknown as {
 let _client: PrismaClient | null = null;
 let _dbUrl: string | null = null;
 
-function setupDatabase(): string {
+export function setupDatabase(): string {
   if (_dbUrl) return _dbUrl;
 
   const isServerless = Boolean(
@@ -18,7 +18,7 @@ function setupDatabase(): string {
     process.env.NOW_REGION
   );
 
-  // If a custom remote DATABASE_URL is provided (e.g. Postgres / Turso), use it directly
+  // If a custom remote DATABASE_URL is provided (e.g. Postgres / Turso / remote), use it directly
   const envUrl = process.env.DATABASE_URL;
   if (envUrl && !envUrl.startsWith("file:")) {
     _dbUrl = envUrl;
@@ -31,34 +31,43 @@ function setupDatabase(): string {
     const tmpDir = process.env.TEMP || "/tmp";
     const targetDbPath = path.join(tmpDir, "dev.db");
 
-    if (!fs.existsSync(targetDbPath)) {
-      // Primary location bundled via outputFileTracingIncludes
-      const primarySource = path.join(process.cwd(), "prisma", "dev.db");
-      
-      const fallbackSources = [
-        primarySource,
+    let needsCopy = true;
+    try {
+      if (fs.existsSync(targetDbPath) && fs.statSync(targetDbPath).size > 1000) {
+        needsCopy = false;
+      }
+    } catch {
+      needsCopy = true;
+    }
+
+    if (needsCopy) {
+      const candidates = [
+        path.join(process.cwd(), "prisma", "dev.db"),
+        path.join("/var/task", "prisma", "dev.db"),
         path.join(process.cwd(), "dev.db"),
+        path.join("/var/task", "dev.db"),
         path.join(__dirname, "prisma", "dev.db"),
         path.join(__dirname, "..", "prisma", "dev.db"),
         path.join(__dirname, "..", "..", "prisma", "dev.db"),
+        path.join(__dirname, "..", "..", "..", "prisma", "dev.db"),
       ];
 
       let copied = false;
-      for (const src of fallbackSources) {
-        if (fs.existsSync(/*turbopackIgnore: true*/ src)) {
-          try {
+      for (const src of candidates) {
+        try {
+          if (fs.existsSync(/*turbopackIgnore: true*/ src) && fs.statSync(/*turbopackIgnore: true*/ src).size > 1000) {
             fs.copyFileSync(src, targetDbPath);
             try {
               fs.chmodSync(targetDbPath, 0o666);
             } catch {
               // chmod may not be needed or supported in all environments
             }
-            console.log(`[db] Successfully copied database from ${src} to ${targetDbPath}`);
+            console.log(`[db] Successfully initialized database from ${src} to ${targetDbPath} (${fs.statSync(targetDbPath).size} bytes)`);
             copied = true;
             break;
-          } catch (err) {
-            console.error(`[db] Failed to copy database to ${targetDbPath}:`, err);
           }
+        } catch (err) {
+          console.error(`[db] Error checking/copying ${src}:`, err);
         }
       }
 
@@ -81,7 +90,15 @@ function setupDatabase(): string {
   }
 
   _dbUrl = envUrl || "file:./dev.db";
+  process.env.DATABASE_URL = _dbUrl;
   return _dbUrl;
+}
+
+// Proactively run setupDatabase at module load time so process.env.DATABASE_URL is ready
+try {
+  setupDatabase();
+} catch (e) {
+  console.error("[db] Error in top-level setupDatabase:", e);
 }
 
 function getClient(): PrismaClient {

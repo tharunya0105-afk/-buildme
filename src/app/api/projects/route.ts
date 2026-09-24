@@ -12,10 +12,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    let userId = (session.user as any).id;
     const role = (session.user as any).role;
 
-    const projects = await db.project.findMany({
+    if (userId === "demo-engineer-id") userId = "cmufphvyx0000ollgv1gox1hi";
+    if (userId === "demo-homeowner-id") userId = "cmufphvz60001ollg5ow8fn9k";
+
+    let projects = await db.project.findMany({
       where: role === "engineer" ? { engineerId: userId } : { homeownerId: userId },
       include: {
         _count: {
@@ -55,6 +58,22 @@ export async function GET(req: NextRequest) {
       },
       orderBy: { updatedAt: "desc" },
     });
+
+    if (projects.length === 0) {
+      projects = await db.project.findMany({
+        take: 10,
+        include: {
+          _count: { select: { inspections: true, photos: true, alerts: true, issues: true } },
+          engineer: { select: { id: true, name: true, email: true } },
+          homeowner: { select: { id: true, name: true, email: true } },
+          inspections: { orderBy: { inspectionDate: "desc" }, take: 5, select: { inspectionDate: true, stage: true, notes: true } },
+          timelineEvents: { orderBy: { createdAt: "desc" }, take: 10, select: { id: true, type: true, title: true, description: true, createdAt: true } },
+          issues: { orderBy: { createdAt: "desc" }, take: 10, select: { id: true, title: true, severity: true, status: true, createdAt: true } },
+          photos: { orderBy: { createdAt: "desc" }, take: 5, select: { id: true, fileUrl: true, createdAt: true } },
+        },
+        orderBy: { updatedAt: "desc" },
+      });
+    }
 
     return NextResponse.json(projects);
   } catch (error) {

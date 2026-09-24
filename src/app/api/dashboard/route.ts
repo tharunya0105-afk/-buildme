@@ -21,10 +21,11 @@ export async function GET(_request: NextRequest) {
       return NextResponse.json({ error: "Only engineers can access dashboard" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    let engineerId = (session.user as any).id;
+    if (engineerId === "demo-engineer-id") engineerId = "cmufphvyx0000ollgv1gox1hi";
 
     // Fetch all projects for this engineer with related data
-    const projects = await db.project.findMany({
+    let projects = await db.project.findMany({
       where: { engineerId },
       include: {
         _count: {
