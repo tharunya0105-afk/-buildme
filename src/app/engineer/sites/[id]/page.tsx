@@ -17,7 +17,9 @@ import {
   Camera,
   Crosshair,
   Brain,
+  Layers,
 } from "lucide-react";
+
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
@@ -254,7 +256,13 @@ export default function SiteDetailPage() {
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
+            <Link href={`/engineer/sites/${project.id}/stages`}>
+              <Button variant="secondary">
+                <Layers className="h-4 w-4 mr-2" />
+                Stage Dashboard
+              </Button>
+            </Link>
             <Link href={`/engineer/sites/${project.id}/intelligence`}>
               <Button variant="secondary">
                 <Brain className="h-4 w-4 mr-2" />
@@ -270,6 +278,7 @@ export default function SiteDetailPage() {
           </div>
         </div>
       </div>
+
 
       {/* Progress overview */}
       <Card>

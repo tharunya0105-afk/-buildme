@@ -1,0 +1,240 @@
+{
+  "runId": "eval-1790265043208",
+  "runAt": "2026-09-24T15:50:43.208Z",
+  "datasetVersion": "0.1-sample",
+  "datasetSize": 7,
+  "totalElements": 3,
+  "trajectoryAccuracy": 0,
+  "baselineAccuracy": 0,
+  "accuracyImprovement": 0,
+  "abstentionRate": 0,
+  "falseAlertRate": 0,
+  "elementMetrics": [
+    {
+      "elementId": "sample-col-c1",
+      "elementType": "column",
+      "projectRef": "Project-SAMPLE-001",
+      "observationCount": 3,
+      "groundTruthCount": 1,
+      "trajectoryFinalStage": "column_pedestal",
+      "trajectoryAbstained": false,
+      "trajectoryConfidence": 0.72,
+      "trajectoryCorrect": false,
+      "baselineFinalStage": "column_pedestal",
+      "baselineCorrect": false,
+      "trajectoryAccuracyByStage": {
+        "column_deshuttered": false
+      },
+      "baselineAccuracyByStage": {
+        "column_deshuttered": false
+      }
+    },
+    {
+      "elementId": "sample-footing-f1",
+      "elementType": "footing",
+      "projectRef": "Project-SAMPLE-001",
+      "observationCount": 3,
+      "groundTruthCount": 1,
+      "trajectoryFinalStage": "footing_excavation",
+      "trajectoryAbstained": false,
+      "trajectoryConfidence": 0.65,
+      "trajectoryCorrect": false,
+      "baselineFinalStage": "footing_excavation",
+      "baselineCorrect": false,
+      "trajectoryAccuracyByStage": {
+        "footing_backfill": false
+      },
+      "baselineAccuracyByStage": {
+        "footing_backfill": false
+      }
+    },
+    {
+      "elementId": "sample-brickwork-b1",
+      "elementType": "brickwork",
+      "projectRef": "Project-SAMPLE-001",
+      "observationCount": 1,
+      "groundTruthCount": 1,
+      "trajectoryFinalStage": "brickwork_layout",
+      "trajectoryAbstained": false,
+      "trajectoryConfidence": 0.6,
+      "trajectoryCorrect": false,
+      "baselineFinalStage": "brickwork_layout",
+      "baselineCorrect": false,
+      "trajectoryAccuracyByStage": {
+        "brickwork_full": false
+      },
+      "baselineAccuracyByStage": {
+        "brickwork_full": false
+      }
+    }
+  ],
+  "ablationResults": [
+    {
+      "name": "full_system",
+      "description": "Full system: graph constraints + observability + abstention",
+      "config": {
+        "observedThreshold": 0.35,
+        "abstentionThreshold": 0.15,
+        "skipPenaltyPerNode": 1.5,
+        "observabilityAware": true,
+        "graphConstrained": true
+      },
+      "accuracy": 0,
+      "abstentionRate": 0,
+      "falseAlertRate": 0
+    },
+    {
+      "name": "no_observability",
+      "description": "Ablation: disable observability-awareness (no inferred_concealed labels)",
+      "config": {
+        "observedThreshold": 0.35,
+        "abstentionThreshold": 0.15,
+        "skipPenaltyPerNode": 1.5,
+        "observabilityAware": false,
+        "graphConstrained": true
+      },
+      "accuracy": 0,
+      "abstentionRate": 0,
+      "falseAlertRate": 0
+    },
+    {
+      "name": "no_graph",
+      "description": "Ablation: disable graph constraints (any stage-to-stage transition allowed)",
+      "config": {
+        "observedThreshold": 0.35,
+        "abstentionThreshold": 0.15,
+        "skipPenaltyPerNode": 1.5,
+        "observabilityAware": true,
+        "graphConstrained": false
+      },
+      "accuracy": 0,
+      "abstentionRate": 0,
+      "falseAlertRate": 0
+    },
+    {
+      "name": "no_abstention",
+      "description": "Ablation: disable abstention (always emit a result)",
+      "config": {
+        "observedThreshold": 0.35,
+        "abstentionThreshold": 0,
+        "skipPenaltyPerNode": 1.5,
+        "observabilityAware": true,
+        "graphConstrained": true
+      },
+      "accuracy": 0,
+      "abstentionRate": 0,
+      "falseAlertRate": 0
+    },
+    {
+      "name": "baseline",
+      "description": "Baseline: per-image argmax only (no trajectory, no constraints)",
+      "config": {
+        "observedThreshold": 0.35,
+        "abstentionThreshold": 0,
+        "skipPenaltyPerNode": 1.5,
+        "observabilityAware": false,
+        "graphConstrained": false
+      },
+      "accuracy": 0,
+      "abstentionRate": 0,
+      "falseAlertRate": 0
+    }
+  ],
+  "robustnessResults": [
+    {
+      "degradationType": "blur",
+      "description": "Input degradation: blur",
+      "trajectoryAccuracy": 0,
+      "baselineAccuracy": 0,
+      "abstentionRate": 0.6666666666666666
+    },
+    {
+      "degradationType": "missing_frames",
+      "description": "Input degradation: missing_frames",
+      "trajectoryAccuracy": 0,
+      "baselineAccuracy": 0,
+      "abstentionRate": 0
+    },
+    {
+      "degradationType": "out_of_order",
+      "description": "Input degradation: out_of_order",
+      "trajectoryAccuracy": 0,
+      "baselineAccuracy": 0,
+      "abstentionRate": 0
+    },
+    {
+      "degradationType": "low_confidence",
+      "description": "Input degradation: low_confidence",
+      "trajectoryAccuracy": 0,
+      "baselineAccuracy": 0,
+      "abstentionRate": 1
+    }
+  ],
+  "confusionMatrix": {
+    "labels": [
+      "column_pedestal",
+      "footing_excavation",
+      "brickwork_layout",
+      "column_deshuttered",
+      "footing_backfill",
+      "brickwork_full"
+    ],
+    "matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "configUsed": {
+    "observedThreshold": 0.35,
+    "abstentionThreshold": 0.15,
+    "skipPenaltyPerNode": 1.5,
+    "observabilityAware": true,
+    "graphConstrained": true
+  }
+}

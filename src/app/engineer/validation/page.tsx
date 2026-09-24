@@ -116,7 +116,7 @@ const VALIDATION_COLORS: Record<string, string> = {
 export default function ValidationPage() {
   const [data, setData] = useState<ValidationData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"funnel" | "projects" | "analytics" | "quality" | "readiness" | "cedi">("funnel");
+  const [activeTab, setActiveTab] = useState<"funnel" | "projects" | "analytics" | "quality" | "readiness" | "evidence">("funnel");
   const [showDetail, setShowDetail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -150,7 +150,7 @@ export default function ValidationPage() {
     { id: "analytics" as const, label: "Analytics" },
     { id: "quality" as const, label: "Data Quality" },
     { id: "readiness" as const, label: "Pilot Readiness" },
-    { id: "cedi" as const, label: "CEDI View" },
+    { id: "evidence" as const, label: "Evidence Summary" },
   ];
 
   return (
@@ -605,12 +605,12 @@ export default function ValidationPage() {
           </Card>
         )}
 
-        {/* ─── CEDI VIEW TAB ─────────────────────────────────────────────── */}
-        {activeTab === "cedi" && (
+        {/* ─── EVIDENCE SUMMARY TAB ───────────────────────────────────────── */}
+        {activeTab === "evidence" && (
           <div className="space-y-4">
             <Card>
               <CardContent className="p-6">
-                <h2 className="text-lg font-bold mb-4">BuildMe — CEDI Evidence Summary</h2>
+                <h2 className="text-lg font-bold mb-4">BuildMe — Evidence Summary</h2>
                 <div className="prose prose-sm max-w-none">
                   <p className="text-sm text-gray-600 mb-4">
                     BuildMe is a construction cost intelligence platform that combines government benchmarks,

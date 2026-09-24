@@ -9,12 +9,16 @@
     "lint": "eslint",
     "postinstall": "prisma generate || exit 0",
     "db:seed": "npx tsx prisma/seed.ts",
-    "db:reset": "npx prisma db push --force-reset && npm run db:seed"
+    "db:reset": "npx prisma db push --force-reset && npm run db:seed",
+    "eval": "npx tsx eval/run-eval.ts",
+    "eval:sample": "npx tsx eval/run-eval.ts --dataset eval/sample-dataset.json --output eval/reports",
+    "test:trajectory": "npx tsx eval/test-trajectory.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@huggingface/transformers": "^3.8.1",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^3.0.3",
     "leaflet": "^1.9.4",
@@ -24,7 +28,8 @@
     "prisma": "^5.22.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "three": "^0.180.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -33,6 +38,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.180.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
     "tailwindcss": "^4",

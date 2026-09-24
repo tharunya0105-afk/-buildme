@@ -1,0 +1,58 @@
+{
+  "name": "BuildMe — Construction Audit Trail",
+  "short_name": "BuildMe",
+  "description": "Quotation audit, deterministic cost estimates, milestone evidence, and payment proof for independent civil engineers — with a read-only story for homeowners.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e293b",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Sites",
+      "short_name": "Sites",
+      "description": "Your active project sites",
+      "url": "/engineer/sites",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Quotation Intel",
+      "short_name": "Quotes",
+      "description": "Compare contractor BOQs",
+      "url": "/engineer/quotations",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Evidence",
+      "short_name": "Evidence",
+      "description": "Capture milestone evidence",
+      "url": "/engineer/evidence",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

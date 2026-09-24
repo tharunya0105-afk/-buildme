@@ -76,7 +76,7 @@ export async function GET(req: NextRequest) {
     const planningProjects = groundTruthRecords.filter(r => r.tracking_status === "planning");
     const verifiedProjects = completedProjects.filter(r => r.validation_status === "independently_verified");
 
-    let validationMetrics = null;
+    let validationMetrics: any = null;
     if (completedProjects.length >= 3) {
       const errors = completedProjects
         .filter(r => r.variance_percent != null)

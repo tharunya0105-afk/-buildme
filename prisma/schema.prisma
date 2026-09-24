@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 model User {
@@ -79,6 +80,10 @@ model User {
   // Progress Observations
   createdProgressObs  ProgressObservation[]  @relation("CreatedProgressObs")
   verifiedProgressObs ProgressObservation[]  @relation("VerifiedProgressObs")
+
+  // Layout Intelligence
+  createdLayoutPlans  LayoutPlan[]
+  layoutCorrections   LayoutCorrection[]
 }
 
 // ─── Projects / Sites ────────────────────────────────────────────────────────
@@ -144,6 +149,11 @@ model Project {
   evidences      ProjectEvidence[]
   paymentRequests PaymentRequest[]
   progressObs    ProgressObservation[]
+  layoutPlans    LayoutPlan[]
+
+  // ─── Track 2: Structural Elements & Stage Trajectory ──────────────────────
+  structuralElements StructuralElement[]
+  abstentionEvents   AbstentionEvent[]
 }
 
 // ─── Inspections ─────────────────────────────────────────────────────────────
@@ -1077,4 +1087,158 @@ model ProjectEvidence {
   // Relations
   project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdBy       User      @relation(fields: [createdById], references: [id])
+}
+
+// ─── Layout Intelligence (AI Virtual Tour) ───────────────────────────────
+// Uploaded floor-plan/layout images, AI-extracted geometry, and human
+// corrections used as training data for the trainable layout head.
+
+model LayoutPlan {
+  id              String    @id @default(cuid())
+  projectId       String
+  createdById     String
+  title           String
+  floorLabel      String    @default("Ground Floor")
+  fileUrl         String
+  fileName        String?
+  mimeType        String?
+  widthPx         Int?
+  heightPx        Int?
+  scaleFeetPerPx  Float?    // calibration: feet per pixel (user-entered or measured)
+  rooms           String    @default("[]")   // JSON — room polygons from analysis/corrections
+  walls           String    @default("[]")   // JSON — wall segments
+  openings        String    @default("[]")   // JSON — doors/windows
+  stats           String?   // JSON — computed metrics (areas, counts, confidence)
+  correctionsCount Int      @default(0)
+  source          String    @default("ai")  // "ai" | "manual" | "hybrid"
+  status          String    @default("active") // "active" | "archived"
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User      @relation(fields: [createdById], references: [id])
+  corrections     LayoutCorrection[]
+}
+
+model LayoutCorrection {
+  id              String    @id @default(cuid())
+  planId          String
+  createdById     String
+  kind            String    // "merge_rooms" | "delete_room" | "move_wall" | "add_room" | "rename_room" | "set_door" | "set_window" | "set_scale"
+  targetRef       String?   // index or id of the corrected element
+  beforeSnapshot  String?   // JSON — geometry before the correction
+  afterSnapshot   String    // JSON — geometry after the correction
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  plan            LayoutPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  createdBy       User       @relation(fields: [createdById], references: [id])
+}
+
+// ─── Track 2: Structural Elements (per-project) ───────────────────────────────
+// A StructuralElement is the unit of trajectory tracking.
+// One element per physical instance (e.g., "Column C1", "Ground Floor Slab").
+// Its stage is tracked over time via StageRecords.
+
+model StructuralElement {
+  id              String    @id @default(cuid())
+  projectId       String
+  elementType     String    // "footing" | "column" | "beam_slab" | "brickwork" | "plaster" | "flooring" | "electrical" | "plumbing" | "roofing" | "finishing"
+  label           String    // e.g. "Column C1", "Ground Floor Slab"
+  floor           String?   // e.g. "Ground", "First", "Terrace"
+  zone            String?   // e.g. "North", "Kitchen", "Living Room"
+  notes           String?
+
+  // ─── Trajectory output (denormalised for fast reads) ─────────────────────
+  // Updated each time the trajectory engine runs.
+  currentStageId  String?   // latest fitted stage ID from the graph
+  currentStageLabel String? // human label
+  currentStageStatus String? // "observed" | "inferred_concealed" | "unsupported"
+  trajectoryConfidence Float? // 0–1
+  lastFittedAt    DateTime? // when trajectory was last computed
+  abstained       Boolean   @default(false)
+  abstentionReason String?  // reason if abstained
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  project         Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  stageRecords    StageRecord[]
+  photoTags       PhotoElementTag[]
+  abstentionEvents AbstentionEvent[]
+}
+
+// ─── Stage Record: per-photo classifier output ────────────────────────────────
+// Each time a photo is classified for an element, a StageRecord is written.
+// These records are the input sequence to the trajectory decoder.
+
+model StageRecord {
+  id              String    @id @default(cuid())
+  elementId       String
+  photoId         String?   // link to Photo (may be null for manually entered records)
+  photoTimestamp  DateTime  // EXIF or upload timestamp
+
+  // Classifier output
+  stageId         String    // stage ID from the graph (e.g. "column_rebar")
+  stageLabel      String    // human label
+  probability     Float     // P(stage | image) from classifier
+  overallConfidence Float?  // classifier-level confidence
+  classifierSource String   @default("gpt4o") // "gpt4o" | "mock" | "manual" | "fine_tuned"
+  rawOutput       String?   // full JSON from classifier for reproducibility
+
+  // Trajectory output (set after trajectory fitting)
+  trajectoryStatus String?  // "observed" | "inferred_concealed" | "unsupported"
+  fittedPathJson   String?  // full JSON trajectory result (for audit)
+
+  // Instrumentation (baseline comparison)
+  baselineStageId  String?  // argmax of raw classifier (no graph constraints)
+  baselineProbability Float? // probability assigned to baseline stage
+
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  element         StructuralElement @relation(fields: [elementId], references: [id], onDelete: Cascade)
+}
+
+// ─── Photo–Element Tag ────────────────────────────────────────────────────────
+// Links a Photo to the StructuralElement(s) visible in it.
+// A single photo may show multiple elements (e.g., columns + slab in one shot).
+
+model PhotoElementTag {
+  id              String    @id @default(cuid())
+  photoId         String
+  elementId       String
+  confirmedByEngineer Boolean @default(false)
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  element         StructuralElement @relation(fields: [elementId], references: [id], onDelete: Cascade)
+}
+
+// ─── Abstention Event ─────────────────────────────────────────────────────────
+// Logged whenever the trajectory engine abstains (dual-pass disagreement,
+// low confidence, or unexpected regression). Critical for ablation analysis.
+
+model AbstentionEvent {
+  id              String    @id @default(cuid())
+  projectId       String
+  elementId       String
+  reason          String    // textual reason for abstention
+  passAStageId    String?   // stage Pass A emitted (if applicable)
+  passBStageId    String?   // stage Pass B emitted (if applicable)
+  confidenceA     Float?    // confidence of Pass A
+  confidenceB     Float?    // confidence of Pass B
+  resolved        Boolean   @default(false)
+  resolvedById    String?   // engineer who resolved
+  resolvedAt      DateTime?
+  engineerNote    String?   // engineer's resolution note
+  resolvedStageId String?   // stage after resolution
+
+  createdAt       DateTime  @default(now())
+
+  // Relations
+  project         Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  element         StructuralElement @relation(fields: [elementId], references: [id], onDelete: Cascade)
 }

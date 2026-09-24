@@ -41,9 +41,9 @@ export default function EngineerLayout({
   return (
     <div className="min-h-screen bg-surface-alt">
       <EngineerNav />
-      <div className="pl-64">
+      <div className="md:pl-60 pt-14 md:pt-0">
         <DashboardHeader />
-        <main className="p-6">{children}</main>
+        <main className="p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

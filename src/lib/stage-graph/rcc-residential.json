@@ -1,0 +1,411 @@
+{
+  "version": "1.0.0",
+  "buildingType": "rcc_residential_indian",
+  "description": "Stage-precedence directed graph for Indian RCC-frame residential construction. Used by the trajectory-fitting module to constrain stage inference.",
+  "elementTypes": {
+    "footing": {
+      "label": "Footing / Foundation",
+      "stages": [
+        {
+          "id": "footing_excavation",
+          "label": "Excavation",
+          "shortLabel": "Excavation",
+          "observability": "visible",
+          "description": "Pit dug to required depth and width. Soil removed, dimensions verified.",
+          "concealedBy": "footing_pcc",
+          "validTransitions": ["footing_pcc"]
+        },
+        {
+          "id": "footing_pcc",
+          "label": "PCC / Blinding Layer",
+          "shortLabel": "PCC",
+          "observability": "concealed_by_next",
+          "description": "Plain cement concrete levelling course poured. Becomes invisible once footing rebar is placed and concrete poured.",
+          "concealedBy": "footing_rebar",
+          "validTransitions": ["footing_rebar"]
+        },
+        {
+          "id": "footing_rebar",
+          "label": "Footing Rebar Placement",
+          "shortLabel": "Rebar",
+          "observability": "concealed_by_next",
+          "description": "Reinforcement bars (TMT) tied in footing configuration. Becomes permanently invisible after concrete pour.",
+          "concealedBy": "footing_concrete",
+          "validTransitions": ["footing_concrete"]
+        },
+        {
+          "id": "footing_concrete",
+          "label": "Footing Concrete Pour",
+          "shortLabel": "Concrete",
+          "observability": "concealed_by_next",
+          "description": "Footing concrete poured and consolidated. Surface visible briefly; then buried by backfill.",
+          "concealedBy": "footing_backfill",
+          "validTransitions": ["footing_backfill"]
+        },
+        {
+          "id": "footing_backfill",
+          "label": "Backfill",
+          "shortLabel": "Backfill",
+          "observability": "visible",
+          "description": "Earth returned around footings. Footing itself now permanently concealed.",
+          "concealedBy": null,
+          "validTransitions": ["column_pedestal"]
+        }
+      ]
+    },
+    "column": {
+      "label": "Column",
+      "stages": [
+        {
+          "id": "column_pedestal",
+          "label": "Column Pedestal / Stub",
+          "shortLabel": "Pedestal",
+          "observability": "visible",
+          "description": "Short column stub rising from footing to plinth level. Visible above ground.",
+          "concealedBy": null,
+          "validTransitions": ["column_rebar"]
+        },
+        {
+          "id": "column_rebar",
+          "label": "Column Rebar Placement",
+          "shortLabel": "Rebar",
+          "observability": "concealed_by_next",
+          "description": "Vertical reinforcement bars and stirrups placed. Invisible after concrete pour.",
+          "concealedBy": "column_concrete",
+          "validTransitions": ["column_concrete"]
+        },
+        {
+          "id": "column_formwork",
+          "label": "Column Formwork",
+          "shortLabel": "Formwork",
+          "observability": "visible",
+          "description": "Shuttering erected around column rebar. Rebar becomes invisible at this stage.",
+          "concealedBy": null,
+          "validTransitions": ["column_concrete"]
+        },
+        {
+          "id": "column_concrete",
+          "label": "Column Concrete Pour",
+          "shortLabel": "Pour",
+          "observability": "visible",
+          "description": "Concrete poured into column formwork. Formwork visible; internal rebar permanently concealed.",
+          "concealedBy": null,
+          "validTransitions": ["column_deshuttered"]
+        },
+        {
+          "id": "column_deshuttered",
+          "label": "Column Deshuttered",
+          "shortLabel": "Deshuttered",
+          "observability": "visible",
+          "description": "Formwork removed. Concrete column exposed; surface finish and quality visible.",
+          "concealedBy": null,
+          "validTransitions": ["column_cured"]
+        },
+        {
+          "id": "column_cured",
+          "label": "Column Cured",
+          "shortLabel": "Cured",
+          "observability": "visible",
+          "description": "Curing process completed (7–28 days). Column ready to carry load.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    },
+    "beam_slab": {
+      "label": "Beam & Slab",
+      "stages": [
+        {
+          "id": "slab_centering",
+          "label": "Centering / Shuttering",
+          "shortLabel": "Centering",
+          "observability": "visible",
+          "description": "Temporary supports and formwork erected for slab and beam.",
+          "concealedBy": null,
+          "validTransitions": ["slab_rebar"]
+        },
+        {
+          "id": "slab_rebar",
+          "label": "Beam / Slab Rebar",
+          "shortLabel": "Rebar",
+          "observability": "concealed_by_next",
+          "description": "Steel reinforcement placed for beams and slab (main bars, distribution bars, beam stirrups). Becomes invisible after concrete.",
+          "concealedBy": "slab_concrete",
+          "validTransitions": ["slab_concrete"]
+        },
+        {
+          "id": "slab_mep_rough",
+          "label": "MEP Rough-in (in slab)",
+          "shortLabel": "MEP Rough-in",
+          "observability": "concealed_by_next",
+          "description": "Conduit and plumbing sleeves placed within slab formwork before pour. Permanently concealed.",
+          "concealedBy": "slab_concrete",
+          "validTransitions": ["slab_concrete"]
+        },
+        {
+          "id": "slab_concrete",
+          "label": "Slab Concrete Pour",
+          "shortLabel": "Pour",
+          "observability": "visible",
+          "description": "Concrete poured, levelled, and compacted. Top surface visible; bottom and rebar concealed.",
+          "concealedBy": null,
+          "validTransitions": ["slab_deshuttered"]
+        },
+        {
+          "id": "slab_deshuttered",
+          "label": "Slab Deshuttered",
+          "shortLabel": "Deshuttered",
+          "observability": "visible",
+          "description": "Centering removed. Slab soffit exposed; overall RCC frame now visible.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    },
+    "brickwork": {
+      "label": "Brickwork / Masonry",
+      "stages": [
+        {
+          "id": "brickwork_layout",
+          "label": "Wall Layout",
+          "shortLabel": "Layout",
+          "observability": "visible",
+          "description": "Wall positions marked; first course of bricks laid.",
+          "concealedBy": null,
+          "validTransitions": ["brickwork_full"]
+        },
+        {
+          "id": "brickwork_full",
+          "label": "Full Brickwork",
+          "shortLabel": "Brickwork",
+          "observability": "concealed_by_next",
+          "description": "All walls brought to full height. Visible until plastered.",
+          "concealedBy": "plaster_internal",
+          "validTransitions": ["plaster_internal", "mep_chase"]
+        },
+        {
+          "id": "mep_chase",
+          "label": "MEP Chasing / Conduit",
+          "shortLabel": "MEP Chase",
+          "observability": "concealed_by_next",
+          "description": "Channels cut in brickwork for electrical conduits and plumbing pipes. Concealed by plaster.",
+          "concealedBy": "plaster_internal",
+          "validTransitions": ["plaster_internal"]
+        }
+      ]
+    },
+    "plaster": {
+      "label": "Plastering",
+      "stages": [
+        {
+          "id": "plaster_internal",
+          "label": "Internal Plaster",
+          "shortLabel": "Int. Plaster",
+          "observability": "concealed_by_next",
+          "description": "Internal wall surfaces plastered. Brickwork, chases, and conduits permanently concealed.",
+          "concealedBy": "finishing_putty",
+          "validTransitions": ["plaster_external", "finishing_putty"]
+        },
+        {
+          "id": "plaster_external",
+          "label": "External Plaster",
+          "shortLabel": "Ext. Plaster",
+          "observability": "concealed_by_next",
+          "description": "External facades plastered. Brickwork permanently concealed externally.",
+          "concealedBy": "finishing_paint_external",
+          "validTransitions": ["finishing_paint_external"]
+        }
+      ]
+    },
+    "flooring": {
+      "label": "Flooring",
+      "stages": [
+        {
+          "id": "flooring_screed",
+          "label": "Floor Screed / Bed",
+          "shortLabel": "Screed",
+          "observability": "concealed_by_next",
+          "description": "Cement mortar bed laid over slab. Concealed by final floor finish.",
+          "concealedBy": "flooring_tiles",
+          "validTransitions": ["flooring_tiles", "flooring_marble", "flooring_vitrified"]
+        },
+        {
+          "id": "flooring_tiles",
+          "label": "Floor Tiling",
+          "shortLabel": "Tiling",
+          "observability": "visible",
+          "description": "Ceramic or porcelain tiles laid. Screed bed concealed.",
+          "concealedBy": null,
+          "validTransitions": []
+        },
+        {
+          "id": "flooring_vitrified",
+          "label": "Vitrified Tile Flooring",
+          "shortLabel": "Vitrified",
+          "observability": "visible",
+          "description": "Vitrified tiles laid. Premium finish. Screed bed concealed.",
+          "concealedBy": null,
+          "validTransitions": []
+        },
+        {
+          "id": "flooring_marble",
+          "label": "Marble / Granite Flooring",
+          "shortLabel": "Marble",
+          "observability": "visible",
+          "description": "Natural stone slabs fixed. Screed bed concealed.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    },
+    "electrical": {
+      "label": "Electrical",
+      "stages": [
+        {
+          "id": "electrical_conduit",
+          "label": "Conduit & Wiring",
+          "shortLabel": "Conduit",
+          "observability": "concealed_by_next",
+          "description": "PVC conduits and electrical wires run through chased walls and slab. Permanently concealed by plaster.",
+          "concealedBy": "plaster_internal",
+          "validTransitions": ["electrical_db"]
+        },
+        {
+          "id": "electrical_db",
+          "label": "Distribution Board",
+          "shortLabel": "DB",
+          "observability": "visible",
+          "description": "MCB distribution board installed. Wiring connections made.",
+          "concealedBy": null,
+          "validTransitions": ["electrical_fixtures"]
+        },
+        {
+          "id": "electrical_fixtures",
+          "label": "Electrical Fixtures",
+          "shortLabel": "Fixtures",
+          "observability": "visible",
+          "description": "Switches, sockets, light fittings installed.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    },
+    "plumbing": {
+      "label": "Plumbing",
+      "stages": [
+        {
+          "id": "plumbing_underground",
+          "label": "Underground Plumbing",
+          "shortLabel": "UG Plumbing",
+          "observability": "concealed_by_next",
+          "description": "Drainage and supply pipes laid below slab level. Concealed by slab pour and backfill.",
+          "concealedBy": "slab_concrete",
+          "validTransitions": ["plumbing_risers"]
+        },
+        {
+          "id": "plumbing_risers",
+          "label": "Plumbing Risers / Wall Pipes",
+          "shortLabel": "Risers",
+          "observability": "concealed_by_next",
+          "description": "Vertical supply and drainage pipes run. Concealed by brickwork and plaster.",
+          "concealedBy": "plaster_internal",
+          "validTransitions": ["plumbing_fixtures"]
+        },
+        {
+          "id": "plumbing_fixtures",
+          "label": "Sanitary Fixtures",
+          "shortLabel": "Fixtures",
+          "observability": "visible",
+          "description": "WCs, basins, taps, geysers installed.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    },
+    "roofing": {
+      "label": "Roof / Terrace",
+      "stages": [
+        {
+          "id": "roof_waterproofing",
+          "label": "Roof Waterproofing",
+          "shortLabel": "Waterproofing",
+          "observability": "concealed_by_next",
+          "description": "Waterproofing membrane or treatment applied over roof slab. Concealed by screed and tiles.",
+          "concealedBy": "roof_screed",
+          "validTransitions": ["roof_screed"]
+        },
+        {
+          "id": "roof_screed",
+          "label": "Roof Screed / Slope",
+          "shortLabel": "Screed",
+          "observability": "concealed_by_next",
+          "description": "Sloped screed over waterproofing for drainage. Concealed by terrace finish.",
+          "concealedBy": "roof_finish",
+          "validTransitions": ["roof_finish"]
+        },
+        {
+          "id": "roof_finish",
+          "label": "Terrace / Roof Finish",
+          "shortLabel": "Finish",
+          "observability": "visible",
+          "description": "China mosaic, paver blocks, or roof tiles laid. Waterproofing permanently concealed.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    },
+    "finishing": {
+      "label": "Interior Finishing",
+      "stages": [
+        {
+          "id": "finishing_putty",
+          "label": "Wall Putty",
+          "shortLabel": "Putty",
+          "observability": "concealed_by_next",
+          "description": "Putty applied over internal plaster. Concealed by paint.",
+          "concealedBy": "finishing_paint_internal",
+          "validTransitions": ["finishing_paint_internal"]
+        },
+        {
+          "id": "finishing_paint_internal",
+          "label": "Internal Paint",
+          "shortLabel": "Int. Paint",
+          "observability": "visible",
+          "description": "Primer and finish paint coats applied to internal walls. Final visual surface.",
+          "concealedBy": null,
+          "validTransitions": []
+        },
+        {
+          "id": "finishing_paint_external",
+          "label": "External Paint / Cladding",
+          "shortLabel": "Ext. Paint",
+          "observability": "visible",
+          "description": "External facade painted or clad. Final building exterior visible.",
+          "concealedBy": null,
+          "validTransitions": []
+        },
+        {
+          "id": "finishing_woodwork",
+          "label": "Woodwork / Carpentry",
+          "shortLabel": "Woodwork",
+          "observability": "visible",
+          "description": "Doors, window frames, built-in furniture installed.",
+          "concealedBy": null,
+          "validTransitions": []
+        }
+      ]
+    }
+  },
+  "projectLevelStages": [
+    { "id": "planning", "label": "Planning", "order": 1, "progressPct": 5 },
+    { "id": "foundation", "label": "Foundation", "order": 2, "progressPct": 15 },
+    { "id": "structure", "label": "Structure (RCC Frame)", "order": 3, "progressPct": 35 },
+    { "id": "brickwork", "label": "Brickwork", "order": 4, "progressPct": 48 },
+    { "id": "roofing", "label": "Roofing", "order": 5, "progressPct": 58 },
+    { "id": "electrical_plumbing", "label": "Electrical / Plumbing", "order": 6, "progressPct": 70 },
+    { "id": "plastering", "label": "Plastering", "order": 7, "progressPct": 78 },
+    { "id": "flooring", "label": "Flooring", "order": 8, "progressPct": 85 },
+    { "id": "finishing", "label": "Finishing", "order": 9, "progressPct": 95 },
+    { "id": "completed", "label": "Completed", "order": 10, "progressPct": 100 }
+  ]
+}

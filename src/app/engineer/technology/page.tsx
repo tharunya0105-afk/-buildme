@@ -414,10 +414,10 @@ export default function TechnologyCorePage() {
       {/* Navigation */}
       <div className="flex items-center gap-3">
         <Link href="/engineer/roadmap" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
-          View EIR Roadmap <ArrowRight className="h-3 w-3" />
+          View Product Roadmap <ArrowRight className="h-3 w-3" />
         </Link>
-        <Link href="/engineer/eir-readiness" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
-          View EIR Readiness <ArrowRight className="h-3 w-3" />
+        <Link href="/engineer/program-readiness" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+          View Program Readiness <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
     </div>

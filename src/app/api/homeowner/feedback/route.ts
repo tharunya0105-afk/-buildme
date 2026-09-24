@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Store responses as individual feedback records
-    const savedResponses = [];
+    const savedResponses: any[] = [];
 
     // Handle simple form fields
     if (rating) {

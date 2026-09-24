@@ -592,7 +592,64 @@ async function main() {
     quotationCount++;
   }
 
-  console.log(`✅ Created ${quotationCount} demo quotations`);
+  // ─── Structural Elements (Track 2 Demo Data) ─────────────────────────────
+  // Seed structural elements for Kumar Residence to demonstrate the Stage Dashboard.
+  // Status values demonstrate all three trajectory outcomes.
+
+  const kumarResidenceProject = projects.find(p => p.name === "Kumar Residence");
+  if (kumarResidenceProject) {
+    const elementSeeds = [
+      // Footings — completed and backfilled (inferred_concealed for rebar stages)
+      { elementType: "footing", label: "Footing F1 (Column A1)", floor: "Below Ground", zone: "North-East", currentStageId: "footing_backfill", currentStageLabel: "Backfill", currentStageStatus: "observed", trajectoryConfidence: 0.82 },
+      { elementType: "footing", label: "Footing F2 (Column A2)", floor: "Below Ground", zone: "North-West", currentStageId: "footing_backfill", currentStageLabel: "Backfill", currentStageStatus: "observed", trajectoryConfidence: 0.78 },
+      // Columns — deshuttered on ground floor
+      { elementType: "column", label: "Column C1 (North)", floor: "Ground", zone: "North", currentStageId: "column_deshuttered", currentStageLabel: "Column Deshuttered", currentStageStatus: "observed", trajectoryConfidence: 0.91 },
+      { elementType: "column", label: "Column C2 (South)", floor: "Ground", zone: "South", currentStageId: "column_rebar", currentStageLabel: "Column Rebar Placement", currentStageStatus: "inferred_concealed", trajectoryConfidence: 0.74 },
+      { elementType: "column", label: "Column C3 (West)", floor: "Ground", zone: "West", currentStageId: "column_formwork", currentStageLabel: "Column Formwork", currentStageStatus: "observed", trajectoryConfidence: 0.88 },
+      // Slab — poured but centering still up
+      { elementType: "beam_slab", label: "Ground Floor Slab", floor: "Ground", zone: "All", currentStageId: "slab_concrete", currentStageLabel: "Slab Concrete Pour", currentStageStatus: "observed", trajectoryConfidence: 0.85 },
+      { elementType: "beam_slab", label: "First Floor Slab", floor: "First", zone: "All", currentStageId: "slab_rebar", currentStageLabel: "Beam / Slab Rebar", currentStageStatus: "inferred_concealed", trajectoryConfidence: 0.71 },
+      // Brickwork — ground floor done
+      { elementType: "brickwork", label: "Ground Floor Walls", floor: "Ground", zone: "All", currentStageId: "brickwork_full", currentStageLabel: "Full Brickwork", currentStageStatus: "observed", trajectoryConfidence: 0.80 },
+      { elementType: "brickwork", label: "First Floor Walls", floor: "First", zone: "All", currentStageId: null, currentStageLabel: null, currentStageStatus: "unsupported", trajectoryConfidence: 0.12 },
+      // Electrical — conduit concealed
+      { elementType: "electrical", label: "Ground Floor Wiring", floor: "Ground", zone: "All", currentStageId: "electrical_conduit", currentStageLabel: "Conduit & Wiring", currentStageStatus: "inferred_concealed", trajectoryConfidence: 0.65 },
+      // Plumbing
+      { elementType: "plumbing", label: "Underground Drainage", floor: "Below Ground", zone: "All", currentStageId: "plumbing_underground", currentStageLabel: "Underground Plumbing", currentStageStatus: "inferred_concealed", trajectoryConfidence: 0.69 },
+      // Roofing — not started yet
+      { elementType: "roofing", label: "Terrace", floor: "Terrace", zone: "All", currentStageId: null, currentStageLabel: null, currentStageStatus: "unsupported", trajectoryConfidence: 0.05 },
+    ];
+
+    let elementCount = 0;
+    for (const el of elementSeeds) {
+      await prisma.structuralElement.upsert({
+        where: { id: `seed-elem-${el.label.replace(/[^a-z0-9]/gi, "-").toLowerCase().slice(0, 30)}` },
+        create: {
+          id: `seed-elem-${el.label.replace(/[^a-z0-9]/gi, "-").toLowerCase().slice(0, 30)}`,
+          projectId: kumarResidenceProject.id,
+          elementType: el.elementType,
+          label: el.label,
+          floor: el.floor,
+          zone: el.zone,
+          currentStageId: el.currentStageId,
+          currentStageLabel: el.currentStageLabel,
+          currentStageStatus: el.currentStageStatus,
+          trajectoryConfidence: el.trajectoryConfidence,
+          lastFittedAt: new Date(),
+          abstained: false,
+        },
+        update: {
+          currentStageId: el.currentStageId,
+          currentStageLabel: el.currentStageLabel,
+          currentStageStatus: el.currentStageStatus,
+          trajectoryConfidence: el.trajectoryConfidence,
+          lastFittedAt: new Date(),
+        },
+      });
+      elementCount++;
+    }
+    console.log(`✅ Created ${elementCount} demo structural elements for Kumar Residence`);
+  }
 
   console.log(`\n🎉 Seeding complete: ${DEMO_PROJECTS.length} projects + 3 issues + ${workerCount} workers + ${budgetEventCount} budget events + ${changeRequestCount} change requests + ${quotationCount} quotations`);
   console.log(`\n🔑 Login credentials:`);
@@ -600,6 +657,7 @@ async function main() {
   console.log(`   Password: ${DEMO_ENGINEER_PASSWORD}`);
   console.log(`\n📊 All data is DEMO DATA for demonstration purposes.`);
 }
+
 
 main()
   .catch((e) => {

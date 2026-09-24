@@ -344,10 +344,10 @@ export default function PilotsPage() {
             </Card>
           </div>
 
-          {/* EIR Milestone Progress */}
+          {/* Milestone Progress */}
           <Card>
             <CardHeader>
-              <h3 className="text-sm font-semibold text-text-primary">EIR Milestone Progress</h3>
+              <h3 className="text-sm font-semibold text-text-primary">Stage 1 Milestone Progress</h3>
               <p className="text-[10px] text-text-muted">Stage 1 Targets (Months 1–3)</p>
             </CardHeader>
             <CardContent>

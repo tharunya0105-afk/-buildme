@@ -5,13 +5,14 @@ import Link from "next/link";
 import {
   Home, AlertTriangle, CheckCircle, Clock, Camera,
   MapPin, User, DollarSign, ArrowUpRight, Layers,
-  Shield, Hammer, Info, MessageSquare, ChevronRight,
-  TrendingUp, CircleDot,
+  Shield, ShieldCheck, Hammer, Info, MessageSquare, ChevronRight,
+  TrendingUp, CircleDot, Box,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/layout/EmptyState";
+import HomeownerStageView from "@/components/ui/HomeownerStageView";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -525,10 +526,34 @@ export default function HomeownerHome() {
 
       <ProgressCard project={project} truth={truthData} />
 
+      {/* Structural Elements & Concealment Transparency */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold text-text-primary">Structural Elements & Concealment Status</h3>
+          </div>
+          <Link href="/homeowner/stages" className="text-xs text-primary font-medium hover:underline flex items-center gap-0.5">
+            Full View <ChevronRight className="h-3 w-3" />
+          </Link>
+        </div>
+        <HomeownerStageView projectId={project.id} />
+      </div>
+
       <AttentionCard project={project} concerns={concerns} />
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2">
+        <Link href="/homeowner/stages">
+          <Button size="sm" variant="primary">
+            <ShieldCheck className="h-3 w-3 mr-1" />Structural Verification
+          </Button>
+        </Link>
+        <Link href="/homeowner/tour">
+          <Button size="sm" variant="accent">
+            <Box className="h-3 w-3 mr-1" />Virtual Tour of My Home
+          </Button>
+        </Link>
         <Link href={`/homeowner/updates?projectId=${project.id}`}>
           <Button size="sm" variant="secondary">
             <Camera className="h-3 w-3 mr-1" />View Photos

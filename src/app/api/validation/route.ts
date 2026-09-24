@@ -96,9 +96,9 @@ export async function GET(req: NextRequest) {
       p => p.trackingStatus === "completed" && p.finalCost != null && p.estimate
     );
 
-    let validationMetrics = null;
-    let rangeCoverage = null;
-    let estimatorBias = null;
+    let validationMetrics: any = null;
+    let rangeCoverage: any = null;
+    let estimatorBias: any = null;
 
     if (completedWithCost.length >= 1) {
       const errors = completedWithCost.map(p => {

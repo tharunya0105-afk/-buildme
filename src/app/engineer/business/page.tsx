@@ -960,9 +960,9 @@ export default function BusinessValidationPage() {
             </CardContent>
           </Card>
 
-          {/* CEDI Story */}
+          {/* Product Story */}
           <Card>
-            <CardHeader><h3 className="text-sm font-semibold text-text-primary">CEDI Demonstration Story</h3></CardHeader>
+            <CardHeader><h3 className="text-sm font-semibold text-text-primary">Investor Demonstration Story</h3></CardHeader>
             <CardContent>
               <div className="flex items-center gap-0 overflow-x-auto pb-2">
                 {[

@@ -12,7 +12,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
-  const callbackUrl = searchParams.get("callbackUrl") || "/engineer";
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,7 +37,19 @@ function LoginForm() {
         return;
       }
 
-      router.push(callbackUrl);
+      // Route each role to its own portal by default
+      let target = callbackUrl || "/engineer";
+      try {
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        if (session?.user?.role === "homeowner" && !callbackUrl) {
+          target = "/homeowner";
+        }
+      } catch {
+        // fall through to the engineer default
+      }
+
+      router.push(target);
       router.refresh();
     } catch {
       setFormError("Something went wrong. Please try again.");
@@ -96,12 +108,35 @@ function LoginForm() {
             </Button>
           </form>
 
-          {/* Demo credentials hint */}
-          <div className="mt-4 p-3 bg-surface-alt rounded-lg border border-border">
-            <p className="text-[10px] font-semibold text-text-primary mb-1">Demo Credentials</p>
-            <div className="space-y-1 text-[10px] text-text-muted">
-              <p><strong>Engineer:</strong> engineer@buildme.demo / demo1234</p>
-              <p><strong>Homeowner:</strong> rkumar@buildme.demo / demo1234</p>
+          {/* Demo credentials hint with 1-click auto-fill */}
+          <div className="mt-5 p-3.5 bg-surface-alt rounded-lg border border-border">
+            <p className="text-xs font-semibold text-text-primary mb-2 flex items-center justify-between">
+              <span>Demo Access</span>
+              <span className="text-[10px] text-accent font-medium">1-Click Fill</span>
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail("engineer@buildme.demo");
+                  setPassword("demo1234");
+                }}
+                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-colors"
+              >
+                <p className="text-[11px] font-semibold text-text-primary">👷 Engineer Portal</p>
+                <p className="text-[10px] text-text-muted mt-0.5 font-mono truncate">engineer@buildme.demo</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail("rkumar@buildme.demo");
+                  setPassword("demo1234");
+                }}
+                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-colors"
+              >
+                <p className="text-[11px] font-semibold text-text-primary">🏠 Homeowner Portal</p>
+                <p className="text-[10px] text-text-muted mt-0.5 font-mono truncate">rkumar@buildme.demo</p>
+              </button>
             </div>
           </div>
 

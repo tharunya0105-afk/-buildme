@@ -30,7 +30,7 @@ export default function RoadmapPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">BuildMe — 12 Month EIR Technology Roadmap</h1>
+        <h1 className="text-2xl font-bold text-text-primary">BuildMe — 12 Month Technology Roadmap</h1>
         <p className="text-sm text-text-secondary mt-1">
           From working prototype to validated construction intelligence
         </p>
@@ -275,8 +275,8 @@ export default function RoadmapPage() {
         <Link href="/engineer/technology" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
           <ArrowRight className="h-3 w-3 rotate-180" /> Technology Core
         </Link>
-        <Link href="/engineer/eir-readiness" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
-          EIR Readiness <ArrowRight className="h-3 w-3" />
+        <Link href="/engineer/program-readiness" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+          Program Readiness <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
     </div>

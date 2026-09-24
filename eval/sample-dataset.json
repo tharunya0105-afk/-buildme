@@ -1,0 +1,147 @@
+{
+  "version": "0.1-sample",
+  "createdAt": "2026-09-24T00:00:00Z",
+  "description": "Sample dataset for testing the eval harness. Replace with real labeled data before reporting accuracy numbers. All observations are synthetic/illustrative.",
+  "licenseNote": "SAMPLE ONLY — synthetic data for harness testing. Do not report these numbers as real accuracy measurements.",
+  "entries": [
+    {
+      "elementId": "sample-col-c1",
+      "elementType": "column",
+      "projectRef": "Project-SAMPLE-001",
+      "observations": [
+        {
+          "photoId": "photo-001",
+          "timestamp": "2026-01-10T09:00:00Z",
+          "stageProbabilities": {
+            "column_pedestal": 0.72,
+            "column_rebar": 0.15,
+            "column_formwork": 0.08,
+            "column_concrete": 0.03,
+            "column_deshuttered": 0.01,
+            "column_cured": 0.01
+          },
+          "overallConfidence": 0.85
+        },
+        {
+          "photoId": "photo-002",
+          "timestamp": "2026-01-18T10:30:00Z",
+          "stageProbabilities": {
+            "column_pedestal": 0.05,
+            "column_rebar": 0.12,
+            "column_formwork": 0.65,
+            "column_concrete": 0.15,
+            "column_deshuttered": 0.02,
+            "column_cured": 0.01
+          },
+          "overallConfidence": 0.78
+        },
+        {
+          "photoId": "photo-003",
+          "timestamp": "2026-02-01T08:00:00Z",
+          "stageProbabilities": {
+            "column_pedestal": 0.02,
+            "column_rebar": 0.03,
+            "column_formwork": 0.08,
+            "column_concrete": 0.12,
+            "column_deshuttered": 0.70,
+            "column_cured": 0.05
+          },
+          "overallConfidence": 0.82
+        }
+      ],
+      "groundTruth": [
+        {
+          "elementId": "sample-col-c1",
+          "elementType": "column",
+          "labelDate": "2026-02-05T00:00:00Z",
+          "trueStageId": "column_deshuttered",
+          "labelSource": "photo_review",
+          "labelledBy": "Engineer-A",
+          "notes": "Clearly visible in photo-003"
+        }
+      ]
+    },
+    {
+      "elementId": "sample-footing-f1",
+      "elementType": "footing",
+      "projectRef": "Project-SAMPLE-001",
+      "observations": [
+        {
+          "photoId": "photo-010",
+          "timestamp": "2025-12-15T09:00:00Z",
+          "stageProbabilities": {
+            "footing_excavation": 0.65,
+            "footing_pcc": 0.20,
+            "footing_rebar": 0.10,
+            "footing_concrete": 0.03,
+            "footing_backfill": 0.02
+          },
+          "overallConfidence": 0.80
+        },
+        {
+          "photoId": "photo-011",
+          "timestamp": "2025-12-22T11:00:00Z",
+          "stageProbabilities": {
+            "footing_excavation": 0.05,
+            "footing_pcc": 0.10,
+            "footing_rebar": 0.70,
+            "footing_concrete": 0.10,
+            "footing_backfill": 0.05
+          },
+          "overallConfidence": 0.75
+        },
+        {
+          "photoId": "photo-012",
+          "timestamp": "2026-01-05T09:00:00Z",
+          "stageProbabilities": {
+            "footing_excavation": 0.02,
+            "footing_pcc": 0.03,
+            "footing_rebar": 0.05,
+            "footing_concrete": 0.15,
+            "footing_backfill": 0.75
+          },
+          "overallConfidence": 0.88
+        }
+      ],
+      "groundTruth": [
+        {
+          "elementId": "sample-footing-f1",
+          "elementType": "footing",
+          "labelDate": "2026-01-08T00:00:00Z",
+          "trueStageId": "footing_backfill",
+          "labelSource": "engineer_onsite",
+          "labelledBy": "Engineer-A",
+          "notes": "Site visit confirmed backfill complete. Rebar (footing_rebar) now inferred-concealed."
+        }
+      ]
+    },
+    {
+      "elementId": "sample-brickwork-b1",
+      "elementType": "brickwork",
+      "projectRef": "Project-SAMPLE-001",
+      "observations": [
+        {
+          "photoId": "photo-020",
+          "timestamp": "2026-03-10T09:00:00Z",
+          "stageProbabilities": {
+            "brickwork_layout": 0.60,
+            "brickwork_full": 0.30,
+            "mep_chase": 0.10
+          },
+          "overallConfidence": 0.70
+        }
+      ],
+      "groundTruth": [
+        {
+          "elementId": "sample-brickwork-b1",
+          "elementType": "brickwork",
+          "labelDate": "2026-03-15T00:00:00Z",
+          "trueStageId": "brickwork_full",
+          "labelSource": "photo_review",
+          "labelledBy": "Engineer-A",
+          "notes": "Only one photo — marginal confidence"
+        }
+      ]
+    }
+  ]
+}

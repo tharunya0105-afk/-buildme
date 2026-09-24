@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const summaries = [];
+    const summaries: any[] = [];
 
     for (const project of projects) {
       const totalWorkers = project.workers.length;

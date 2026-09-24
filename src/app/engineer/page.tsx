@@ -4,10 +4,9 @@ import { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import {
-  MapPin, AlertTriangle, CheckCircle, ClipboardCheck, Plus, ArrowRight,
-  Camera, Clock, Sparkles, Home, Search, Bell, Building2, Eye,
-  Shield, Map, Brain, Activity, FileText, ChevronRight, X, Calendar,
-  User, DollarSign, Zap, BarChart3,
+  MapPin, ClipboardCheck, Plus, ArrowRight,
+  Sparkles, Building2, Shield, Brain, ChevronRight,
+  AlertTriangle, Clock, Camera,
 } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -154,7 +153,6 @@ function ProgressBar({ currentStage }: { currentStage: string }) {
 export default function EngineerDashboard() {
   const [projects, setProjects] = useState<ApiProject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showNotifications, setShowNotifications] = useState(false);
   const { data: session } = useSession();
   const engineerName = (session?.user as any)?.name || "Engineer";
 

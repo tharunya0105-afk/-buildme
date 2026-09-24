@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
         } catch (dbErr: any) {
           console.error("[auth] Database query error:", dbErr);
           // Demo fallback in case of transient database initialization
-          if (credentials.email === "engineer@buildme.demo" && credentials.password === "demo1234") {
+          if ((credentials.email === "engineer@buildme.demo" || credentials.email === "engineer@demo.com") && credentials.password === "demo1234") {
             return {
               id: "demo-engineer-id",
               email: "engineer@buildme.demo",
@@ -56,7 +56,7 @@ export const authOptions: NextAuthOptions = {
 
         if (!user) {
           // Demo fallback if database is unseeded on cold start
-          if (credentials.email === "engineer@buildme.demo" && credentials.password === "demo1234") {
+          if ((credentials.email === "engineer@buildme.demo" || credentials.email === "engineer@demo.com") && credentials.password === "demo1234") {
             return {
               id: "demo-engineer-id",
               email: "engineer@buildme.demo",
@@ -83,7 +83,7 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) {
           // Check if it's the demo account using default demo password
           if (
-            (user.email === "engineer@buildme.demo" || user.email === "rkumar@buildme.demo") &&
+            (user.email === "engineer@buildme.demo" || user.email === "rkumar@buildme.demo" || user.email === "engineer@demo.com") &&
             credentials.password === "demo1234"
           ) {
             return {
