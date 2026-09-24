@@ -316,6 +316,7 @@ export default function DeckPage() {
           <tbody>
             {[
               ["Deterministic regional cost benchmark", "✗", "✗", "internal", "✓ 16 BCCI centres"],
+              ["Zero-BIM Inferred Concealment (Patent-Pending)", "✗", "✗", "✗", "✓ Candidate A DAG Engine"],
               ["Quotation scope normalization", "✗", "partial", "internal", "✓"],
               ["Homeowner-facing evidence story", "chat chaos", "✗", "consumer app", "✓ share-link"],
               ["Estimated-vs-actual corpus", "✗", "✗", "proprietary", "accumulating"],

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   MapPin, Settings, HardHat, Crosshair, DollarSign,
   FileText, Target, Brain, Rocket, TrendingUp, Camera,
-  CreditCard, Menu, X, Layers, Activity,
+  CreditCard, Menu, X, Layers, Activity, Briefcase, Award,
 } from "lucide-react";
 
 interface NavSection {
@@ -47,9 +47,17 @@ const sections: NavSection[] = [
     ],
   },
   {
+    label: "FUNDING & INVESTORS",
+    items: [
+      { name: "Investor Room", href: "/investors", icon: Briefcase },
+      { name: "10-Slide Deck", href: "/deck", icon: FileText },
+      { name: "Traction & Diligence", href: "/engineer/traction", icon: Activity },
+      { name: "Program Readiness", href: "/engineer/program-readiness", icon: Award },
+    ],
+  },
+  {
     label: "ADMIN",
     items: [
-      { name: "Traction", href: "/engineer/traction", icon: Activity },
       { name: "Pilot Center", href: "/engineer/pilots", icon: Rocket },
       { name: "Settings", href: "/engineer/settings", icon: Settings },
     ],

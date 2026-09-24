@@ -4,7 +4,7 @@ import {
   Camera, TrendingUp, CheckCircle, Zap,
   MapPin, CreditCard, ChevronRight, Shield,
   Users, TrendingDown, Clock, AlertTriangle,
-  Compass,
+  Compass, Briefcase, Sparkles,
 } from "lucide-react";
 
 const features = [
@@ -140,18 +140,18 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <div className="flex items-center gap-2">
             <span className="bg-accent px-2 py-0.5 rounded text-[10px] font-bold tracking-wide uppercase text-white">
-              Now Piloting
+              Institutional Funding
             </span>
             <span className="text-white/90 font-medium">
-              Built with practicing civil engineers in Tamil Nadu · Stage: pre-pilot validation, onboarding pilot partners
+              Seed / Grant Diligence Portal · Concealment-Aware AI (Patent Pending) · 5 Pilot Sites Live in Tamil Nadu
             </span>
           </div>
-          <a
-            href="#demo"
+          <Link
+            href="/investors"
             className="text-accent-light hover:underline font-semibold text-xs flex items-center gap-1"
           >
-            Quick Demo Access <ChevronRight className="w-3.5 h-3.5 inline" />
-          </a>
+            Investor & Diligence Room <ChevronRight className="w-3.5 h-3.5 inline" />
+          </Link>
         </div>
       </div>
 
@@ -172,15 +172,24 @@ export default function LandingPage() {
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-text-secondary">
+            <Link href="/investors" className="text-accent font-semibold flex items-center gap-1 hover:text-accent-dark transition-colors">
+              Investor Room <span className="text-[10px] px-1.5 py-0.2 bg-accent/10 rounded-full border border-accent/20">Data Room</span>
+            </Link>
+            <Link href="/deck" className="hover:text-text-primary transition-colors">Pitch Deck</Link>
             <a href="#problem" className="hover:text-text-primary transition-colors">The Problem</a>
             <a href="#solution" className="hover:text-text-primary transition-colors">Platform</a>
-            <a href="#founder" className="hover:text-text-primary transition-colors">Founder Story</a>
             <a href="#market" className="hover:text-text-primary transition-colors">Market & Scale</a>
             <a href="#roadmap" className="hover:text-text-primary transition-colors">90-Day Plan</a>
           </div>
 
           {/* Nav CTAs */}
           <div className="flex items-center gap-3">
+            <Link
+              href="/investors"
+              className="hidden sm:inline-flex text-xs font-semibold text-accent border border-accent/30 bg-accent/5 px-3 py-1.5 rounded-lg hover:bg-accent/10 transition-colors"
+            >
+              For Evaluators
+            </Link>
             <Link
               href="/auth/login"
               className="text-sm font-semibold text-text-secondary hover:text-text-primary transition-colors px-3 py-2"
@@ -206,7 +215,7 @@ export default function LandingPage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-micro font-medium mb-6 border border-accent/20">
               <Compass className="w-3.5 h-3.5" />
-              Construction Intelligence Platform for Tier-2 & Tier-3 India
+              Deep-Tech Construction Intelligence · Patent-Pending Candidate A Engine
             </div>
 
             <h1 className="text-display font-bold text-text-primary leading-[1.15] tracking-tight">
@@ -217,20 +226,23 @@ export default function LandingPage() {
             </h1>
 
             <p className="mt-6 text-xl text-text-secondary leading-relaxed">
-              BuildMe turns contractor quotations, site evidence, and government cost benchmarks into one auditable project story — for independent civil engineers in Tier-2 & Tier-3 Tamil Nadu.
+              BuildMe turns contractor quotations, dated smartphone photos, and government cost benchmarks into one auditable project story — for independent civil engineers across Tier-2 & Tier-3 India.
             </p>
 
             <p className="mt-4 text-body text-text-muted leading-relaxed max-w-2xl">
-              India has no corpus of estimated-vs-actual residential construction costs. We are building it — one verified project at a time — on top of deterministic, auditable benchmarks.
+              Zero 3D BIM models required. Zero manual paperwork. Built on a proprietary temporal Viterbi DAG that solves physical concealment tracking for residential builds.
             </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <a href="#demo" className="btn-premium btn-accent px-7 py-3 text-base shadow-md">
-                See one real project, end to end <ArrowRight className="w-4 h-4 ml-1.5" />
+                Experience Live Demo <ArrowRight className="w-4 h-4 ml-1.5" />
               </a>
-              <a href="#founder" className="btn-premium btn-secondary px-6 py-3 text-base">
-                Read Founder Story
-              </a>
+              <Link href="/investors" className="btn-premium btn-secondary px-6 py-3 text-base font-semibold flex items-center justify-center gap-2">
+                <Briefcase className="h-4 w-4 text-accent" /> Investor & Diligence Room
+              </Link>
+              <Link href="/deck" className="px-5 py-3 text-base font-medium text-text-secondary hover:text-text-primary flex items-center justify-center gap-1.5">
+                <FileText className="h-4 w-4" /> 10-Slide Deck
+              </Link>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 text-micro text-text-muted">
@@ -279,12 +291,20 @@ export default function LandingPage() {
                 <p className="text-[10px] font-mono text-text-muted">Pass: demo1234</p>
               </div>
 
-              <Link
-                href="/auth/login"
-                className="btn-premium btn-accent px-6 py-3 text-sm font-semibold shadow-md self-center flex items-center justify-center gap-1.5"
-              >
-                Sign In With 1-Click <ChevronRight className="w-4 h-4" />
-              </Link>
+              <div className="flex flex-col gap-2 self-center">
+                <Link
+                  href="/auth/login"
+                  className="btn-premium btn-accent px-6 py-2.5 text-sm font-semibold shadow-md flex items-center justify-center gap-1.5"
+                >
+                  Sign In With 1-Click <ChevronRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/investors"
+                  className="text-xs font-semibold text-accent hover:underline text-center flex items-center justify-center gap-1"
+                >
+                  <Briefcase className="w-3.5 h-3.5" /> Evaluator Diligence Room
+                </Link>
+              </div>
             </div>
           </div>
         </div>

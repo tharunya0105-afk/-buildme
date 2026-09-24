@@ -57,6 +57,30 @@ function LoginForm() {
     }
   };
 
+  const handleQuickSignIn = async (roleEmail: string, targetPath: string) => {
+    setEmail(roleEmail);
+    setPassword("demo1234");
+    setLoading(true);
+    setFormError("");
+    try {
+      const result = await signIn("credentials", {
+        email: roleEmail,
+        password: "demo1234",
+        redirect: false,
+      });
+      if (result?.error) {
+        setFormError(result.error);
+        setLoading(false);
+        return;
+      }
+      router.push(targetPath);
+      router.refresh();
+    } catch {
+      setFormError("Failed to sign in with demo credentials.");
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex">
       {/* Left side - Form */}
@@ -108,35 +132,37 @@ function LoginForm() {
             </Button>
           </form>
 
-          {/* Demo credentials hint with 1-click auto-fill */}
+          {/* Demo credentials hint with 1-click instant login */}
           <div className="mt-5 p-3.5 bg-surface-alt rounded-lg border border-border">
             <p className="text-xs font-semibold text-text-primary mb-2 flex items-center justify-between">
-              <span>Demo Access</span>
-              <span className="text-[10px] text-accent font-medium">1-Click Fill</span>
+              <span>Evaluator & Demo Access</span>
+              <span className="text-[10px] text-accent font-semibold px-1.5 py-0.5 rounded bg-accent/10">1-Click Launch</span>
             </p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={() => {
-                  setEmail("engineer@buildme.demo");
-                  setPassword("demo1234");
-                }}
-                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-colors"
+                disabled={loading}
+                onClick={() => handleQuickSignIn("engineer@buildme.demo", "/engineer")}
+                className="text-left p-2.5 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
               >
-                <p className="text-[11px] font-semibold text-text-primary">👷 Engineer Portal</p>
-                <p className="text-[10px] text-text-muted mt-0.5 font-mono truncate">engineer@buildme.demo</p>
+                <p className="text-[11px] font-bold text-text-primary">👷 Engineer Portal</p>
+                <p className="text-[10px] text-accent font-medium mt-0.5">Click to Launch →</p>
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setEmail("rkumar@buildme.demo");
-                  setPassword("demo1234");
-                }}
-                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-colors"
+                disabled={loading}
+                onClick={() => handleQuickSignIn("rkumar@buildme.demo", "/homeowner")}
+                className="text-left p-2.5 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
               >
-                <p className="text-[11px] font-semibold text-text-primary">🏠 Homeowner Portal</p>
-                <p className="text-[10px] text-text-muted mt-0.5 font-mono truncate">rkumar@buildme.demo</p>
+                <p className="text-[11px] font-bold text-text-primary">🏠 Homeowner Trust</p>
+                <p className="text-[10px] text-accent font-medium mt-0.5">Click to Launch →</p>
               </button>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between text-xs">
+              <span className="text-[11px] text-text-muted">Funding committee?</span>
+              <Link href="/investors" className="text-[11px] font-semibold text-accent hover:underline flex items-center gap-0.5">
+                Investor Room & Deck →
+              </Link>
             </div>
           </div>
 
