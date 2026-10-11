@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Bell, Clock, HardHat, Menu, X, Box, ShieldCheck } from "lucide-react";
+import { Home, Bell, Clock, HardHat, Menu, X, Box, ShieldCheck, Building2 } from "lucide-react";
 
 const navigation = [
   { name: "My Home", href: "/homeowner", icon: Home },
@@ -11,6 +11,7 @@ const navigation = [
   { name: "Virtual Tour", href: "/homeowner/tour", icon: Box },
   { name: "Updates", href: "/homeowner/updates", icon: Bell },
   { name: "Timeline", href: "/homeowner/timeline", icon: Clock },
+  { name: "Buyer Diligence", href: "/buyers", icon: Building2 },
 ];
 
 function NavLogo() {

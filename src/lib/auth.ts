@@ -39,6 +39,22 @@ export const authOptions: NextAuthOptions = {
           throw new Error(`Database error: ${msg}`);
         }
 
+        if (!user && credentials.email === "buyer@buildme.demo") {
+          try {
+            const passwordHash = await bcrypt.hash("demo1234", 12);
+            user = await db.user.create({
+              data: {
+                name: "Ananya S (Home Buyer)",
+                email: "buyer@buildme.demo",
+                passwordHash,
+                role: "buyer",
+              },
+            });
+          } catch {
+            // fallback
+          }
+        }
+
         if (!user) {
           throw new Error("No account found with this email. Please verify your credentials.");
         }

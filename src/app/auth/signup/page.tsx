@@ -4,7 +4,7 @@ import { useState, Suspense } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { HardHat, User, Wrench } from "lucide-react";
+import { HardHat, User, Wrench, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
@@ -16,8 +16,8 @@ function SignupForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"engineer" | "homeowner">(
-    (preselectedRole as "engineer" | "homeowner") || "engineer"
+  const [role, setRole] = useState<"engineer" | "homeowner" | "buyer">(
+    (preselectedRole as "engineer" | "homeowner" | "buyer") || "engineer"
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -54,7 +54,7 @@ function SignupForm() {
         return;
       }
 
-      router.push(role === "engineer" ? "/engineer" : "/homeowner");
+      router.push(role === "engineer" ? "/engineer" : role === "buyer" ? "/buyer" : "/homeowner");
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -93,30 +93,42 @@ function SignupForm() {
               <label className="block text-sm font-medium text-text-primary">
                 I am a...
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => setRole("engineer")}
-                  className={`flex items-center justify-center gap-2 p-3 rounded-md border text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-center gap-1.5 p-2.5 rounded-md border text-xs font-medium transition-colors ${
                     role === "engineer"
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-border text-text-secondary hover:border-border-strong hover:bg-surface-alt"
                   }`}
                 >
-                  <Wrench className="h-4 w-4" />
+                  <Wrench className="h-3.5 w-3.5" />
                   Engineer
                 </button>
                 <button
                   type="button"
                   onClick={() => setRole("homeowner")}
-                  className={`flex items-center justify-center gap-2 p-3 rounded-md border text-sm font-medium transition-colors ${
+                  className={`flex items-center justify-center gap-1.5 p-2.5 rounded-md border text-xs font-medium transition-colors ${
                     role === "homeowner"
                       ? "border-primary bg-primary/5 text-primary"
                       : "border-border text-text-secondary hover:border-border-strong hover:bg-surface-alt"
                   }`}
                 >
-                  <User className="h-4 w-4" />
+                  <User className="h-3.5 w-3.5" />
                   Homeowner
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole("buyer" as any)}
+                  className={`flex items-center justify-center gap-1.5 p-2.5 rounded-md border text-xs font-medium transition-colors ${
+                    role === ("buyer" as any)
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border text-text-secondary hover:border-border-strong hover:bg-surface-alt"
+                  }`}
+                >
+                  <Building2 className="h-3.5 w-3.5" />
+                  Home Buyer
                 </button>
               </div>
             </div>

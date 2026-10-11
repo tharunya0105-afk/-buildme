@@ -44,6 +44,8 @@ function LoginForm() {
         const session = await sessionRes.json();
         if (session?.user?.role === "homeowner" && !callbackUrl) {
           target = "/homeowner";
+        } else if (session?.user?.role === "buyer" && !callbackUrl) {
+          target = "/buyer";
         }
       } catch {
         // fall through to the engineer default
@@ -138,24 +140,33 @@ function LoginForm() {
               <span>Evaluator & Demo Access</span>
               <span className="text-[10px] text-accent font-semibold px-1.5 py-0.5 rounded bg-accent/10">1-Click Launch</span>
             </p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <button
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickSignIn("engineer@buildme.demo", "/engineer")}
-                className="text-left p-2.5 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
+                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
               >
-                <p className="text-[11px] font-bold text-text-primary">👷 Engineer Portal</p>
-                <p className="text-[10px] text-accent font-medium mt-0.5">Click to Launch →</p>
+                <p className="text-[11px] font-bold text-text-primary">👷 Engineer</p>
+                <p className="text-[10px] text-accent font-medium mt-0.5">Sites & BOQ →</p>
               </button>
               <button
                 type="button"
                 disabled={loading}
                 onClick={() => handleQuickSignIn("rkumar@buildme.demo", "/homeowner")}
-                className="text-left p-2.5 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
+                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
               >
-                <p className="text-[11px] font-bold text-text-primary">🏠 Homeowner Trust</p>
-                <p className="text-[10px] text-accent font-medium mt-0.5">Click to Launch →</p>
+                <p className="text-[11px] font-bold text-text-primary">🏗️ Builder</p>
+                <p className="text-[10px] text-accent font-medium mt-0.5">Home Build →</p>
+              </button>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleQuickSignIn("buyer@buildme.demo", "/buyer")}
+                className="text-left p-2 rounded-md bg-white border border-border hover:border-accent hover:bg-accent/5 transition-all shadow-sm"
+              >
+                <p className="text-[11px] font-bold text-text-primary">🏠 Home Buyer</p>
+                <p className="text-[10px] text-accent font-medium mt-0.5">Pre-Purchase →</p>
               </button>
             </div>
             <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between text-xs">
