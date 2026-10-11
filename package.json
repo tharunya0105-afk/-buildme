@@ -12,7 +12,8 @@
     "db:reset": "npx prisma db push --force-reset && npm run db:seed",
     "eval": "npx tsx eval/run-eval.ts",
     "eval:sample": "npx tsx eval/run-eval.ts --dataset eval/sample-dataset.json --output eval/reports",
-    "test:trajectory": "npx tsx eval/test-trajectory.ts"
+    "test:trajectory": "npx tsx eval/test-trajectory.ts",
+    "test": "npx tsx --test test/**/*.test.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

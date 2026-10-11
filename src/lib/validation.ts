@@ -140,3 +140,13 @@ export function parseBody<T>(
   }
   return { data: result.data, error: null };
 }
+
+export function validateSchema<T>(schema: z.ZodSchema<T>, data: unknown) {
+  const result = schema.safeParse(data);
+  if (result.success) {
+    return { success: true, data: result.data, errors: null };
+  }
+  return { success: false, data: null, errors: result.error.issues };
+}
+
+export const createCheckinSchema = workerCheckInSchema;

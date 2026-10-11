@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-
+import { saveUploadedFile } from "@/lib/storage";
+import { eventBus } from "@/lib/events";
 import { applyRateLimit } from "@/lib/rate-limit";
 
 // POST /api/upload - Upload a photo
@@ -87,25 +86,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create upload directory
-    const uploadDir = path.join(
-      process.cwd(),
-      "public",
-      "uploads",
-      projectId
-    );
-    await mkdir(uploadDir, { recursive: true });
-
-    // Generate unique filename
-    const timestamp = Date.now();
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const ext = file.name.split(".").pop() || "jpg";
-    const filename = `${timestamp}-${randomSuffix}.${ext}`;
-    const filepath = path.join(uploadDir, filename);
-
-    // Write file
+    // Store file via storage adapter (cloud object storage or local fallback)
     const bytes = await file.arrayBuffer();
-    await writeFile(filepath, Buffer.from(bytes));
+    const stored = await saveUploadedFile(bytes, file.name, projectId);
 
     // Create photo record
     const photo = await db.photo.create({
@@ -113,7 +96,7 @@ export async function POST(req: NextRequest) {
         projectId,
         inspectionId: inspectionId || null,
         uploadedBy: userId,
-        fileUrl: `/uploads/${projectId}/${filename}`,
+        fileUrl: stored.fileUrl,
         fileName: file.name,
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
@@ -124,6 +107,13 @@ export async function POST(req: NextRequest) {
     await db.productEvent.create({
       data: { userId, projectId, eventType: "photo_uploaded", metadata: JSON.stringify({ fileName: file.name }) },
     }).catch(() => {});
+
+    // Broadcast realtime event
+    eventBus.broadcast({
+      type: "photo_uploaded",
+      projectId,
+      payload: { photoId: photo.id, fileName: file.name, uploadedBy: userId },
+    });
 
     return NextResponse.json(photo, { status: 201 });
   } catch (error) {

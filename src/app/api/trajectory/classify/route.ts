@@ -10,6 +10,7 @@ import {
   type StageObservation,
 } from "@/lib/stage-graph/trajectory";
 import { applyRateLimit } from "@/lib/rate-limit";
+import { eventBus } from "@/lib/events";
 
 /**
  * POST /api/trajectory/classify
@@ -195,6 +196,19 @@ export async function POST(req: NextRequest) {
         },
       });
     }
+
+    // Broadcast trajectory updated event
+    eventBus.broadcast({
+      type: "trajectory_updated",
+      projectId: element.project.id,
+      payload: {
+        elementId: element.id,
+        currentStageId: result.currentStage?.stageId,
+        currentStageLabel: result.currentStage?.stageLabel,
+        trajectoryConfidence: result.trajectoryConfidence,
+        abstained: result.abstained,
+      },
+    });
 
     return NextResponse.json({
       success: true,
