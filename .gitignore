@@ -62,6 +62,7 @@ demo_videos/
 
 # Python dev/capture/record scripts
 scripts/*.py
+eval/reports/
 *.py
 *.csv
 *.pdf

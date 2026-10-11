@@ -85,7 +85,7 @@ Respond ONLY with the JSON object. No additional text before or after.`;
 function buildUserMessage(input: AiAnalysisInput): string {
   const { project, previousInspection, currentInspection } = input;
 
-  let message = `## PROJECT CONTEXT
+  const message = `## PROJECT CONTEXT
 - Project: ${project.projectName}
 - Construction Type: ${project.constructionType || "Not specified"}
 - Built Area: ${project.builtArea ? `${project.builtArea} sq ft` : "Not specified"}

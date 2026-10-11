@@ -151,7 +151,7 @@ function ElementCard({ element }: { element: StructuralElement }) {
             {status === "inferred_concealed" && (
               <p className="mt-2 text-micro font-medium" style={{ color: cfg.color }}>
                 ⚠ This was physically covered before photos could be taken — this is expected in all construction projects.
-                Your engineer's on-site verification is the record for this item.
+                Your engineer&apos;s on-site verification is the record for this item.
               </p>
             )}
           </div>
@@ -196,7 +196,7 @@ export default function HomeownerStageView({ projectId }: { projectId: string })
       <div className="text-center py-12">
         <Home className="h-10 w-10 text-text-muted mx-auto mb-3 opacity-50" />
         <p className="text-body text-text-muted">
-          Your engineer hasn't added structural elements yet.
+          Your engineer hasn&apos;t added structural elements yet.
         </p>
       </div>
     );

@@ -63,7 +63,7 @@ export interface FeatureInput {
   aiReviewRecommended: boolean;
 
   // Spatial (computed externally)
-  nearbyProjects: Array<{ id: string; name: string; distanceKm: number; riskScore: number }>;
+  nearbyProjects?: Array<{ id: string; name: string; distanceKm: number; riskScore: number }>;
 }
 
 function daysBetween(dateA: string, dateB: string): number {
@@ -125,7 +125,7 @@ export function extractFeatureVector(input: FeatureInput): RiskFeatureVector {
     : 0;
 
   // Spatial features
-  const nearby = input.nearbyProjects;
+  const nearby = input.nearbyProjects ?? [];
   const nearestProjectDistanceKm = nearby.length > 0 ? nearby[0].distanceKm : null;
   const nearbyAverageRisk = nearby.length > 0
     ? nearby.reduce((sum, p) => sum + p.riskScore, 0) / nearby.length
@@ -565,7 +565,7 @@ function calculateDataConfidence(features: RiskFeatureVector): DataConfidence {
 // ─── Spatial Context ────────────────────────────────────────────────────────
 
 function calculateSpatialContext(input: FeatureInput, features: RiskFeatureVector): SpatialContext {
-  const nearby = input.nearbyProjects;
+  const nearby = input.nearbyProjects ?? [];
 
   return {
     hasCoordinates: features.hasCoordinates,

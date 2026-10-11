@@ -28,14 +28,15 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Email and password are required");
         }
 
-        let user: any = null;
+        let user;
         try {
           user = await db.user.findUnique({
             where: { email: credentials.email },
           });
-        } catch (dbErr: any) {
+        } catch (dbErr: unknown) {
           console.error("[auth] Database query error:", dbErr);
-          throw new Error(`Database error: ${dbErr?.message || "Failed to query database"}`);
+          const msg = dbErr instanceof Error ? dbErr.message : "Failed to query database";
+          throw new Error(`Database error: ${msg}`);
         }
 
         if (!user) {

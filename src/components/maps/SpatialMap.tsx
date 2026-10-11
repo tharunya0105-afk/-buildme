@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { SpatialProject } from "@/lib/spatial/types";
 import { CONSTRUCTION_STAGES } from "@/lib/types";
 
@@ -45,58 +45,11 @@ export default function SpatialMap({
   const mapInstanceRef = useRef<unknown>(null);
   const markersRef = useRef<unknown[]>([]);
 
-  useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
-
-    // Dynamic import of Leaflet
-    const initMap = async () => {
-      const L = (await import("leaflet")).default;
-
-      // Create map centered on Tamil Nadu
-      const map = L.map(mapRef.current!, {
-        center: [10.8, 78.5],
-        zoom: 7,
-        scrollWheelZoom: true,
-      });
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 19,
-      }).addTo(map);
-
-      mapInstanceRef.current = map;
-
-      // Add markers
-      updateMarkers(L, map, projects);
-    };
-
-    initMap();
-
-    return () => {
-      if (mapInstanceRef.current) {
-        (mapInstanceRef.current as { remove: () => void }).remove();
-        mapInstanceRef.current = null;
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!mapInstanceRef.current) return;
-
-    const loadLeaflet = async () => {
-      const L = (await import("leaflet")).default;
-      updateMarkers(L, mapInstanceRef.current as L.Map, projects);
-    };
-
-    loadLeaflet();
-  }, [projects, selectedProjectId]);
-
-  function updateMarkers(
+  const updateMarkers = useCallback((
     L: typeof import("leaflet"),
     map: L.Map,
     projectList: SpatialProject[]
-  ) {
+  ) => {
     // Clear existing markers
     markersRef.current.forEach((marker) => {
       (marker as L.Marker).remove();
@@ -212,7 +165,53 @@ export default function SpatialMap({
     if (bounds.length > 0) {
       map.fitBounds(bounds as [number, number][], { padding: [50, 50], maxZoom: 12 });
     }
-  }
+  }, [onSelectProject, selectedProjectId]);
+
+  useEffect(() => {
+    if (!mapRef.current || mapInstanceRef.current) return;
+
+    // Dynamic import of Leaflet
+    const initMap = async () => {
+      const L = (await import("leaflet")).default;
+
+      // Create map centered on Tamil Nadu
+      const map = L.map(mapRef.current!, {
+        center: [10.8, 78.5],
+        zoom: 7,
+        scrollWheelZoom: true,
+      });
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(map);
+
+      mapInstanceRef.current = map;
+
+      // Add markers
+      updateMarkers(L, map, projects);
+    };
+
+    initMap();
+
+    return () => {
+      if (mapInstanceRef.current) {
+        (mapInstanceRef.current as { remove: () => void }).remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [projects, updateMarkers]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    const loadLeaflet = async () => {
+      const L = (await import("leaflet")).default;
+      updateMarkers(L, mapInstanceRef.current as L.Map, projects);
+    };
+
+    loadLeaflet();
+  }, [projects, selectedProjectId, updateMarkers]);
 
   return (
     <div ref={mapRef} className="h-full w-full" />
