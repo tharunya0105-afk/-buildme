@@ -30,9 +30,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
+.env
 .env.local
 .env*.local
+.env*
 
 # vercel
 .vercel
@@ -41,9 +43,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# Database (never commit — use Postgres in production)
+prisma/dev.db
+prisma/*.db
 
-# env files
-.env
+# User-uploaded files (ephemeral — use object storage in production)
+public/uploads/
 
-.env*
+# Bulk export / import artifacts (dev only)
+quotation_import_output/
+
+# Screenshots and demo videos (large binary assets, keep out of git)
+cedi_screenshots/
+demo_videos/
+
+# Python dev/capture/record scripts
+scripts/*.py

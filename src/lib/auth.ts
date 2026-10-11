@@ -19,6 +19,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
+
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
           // Demo fallback in case of transient database initialization
           if ((credentials.email === "engineer@buildme.demo" || credentials.email === "engineer@demo.com") && credentials.password === "demo1234") {
             return {
-              id: "cmufphvyx0000ollgv1gox1hi",
+              id: "demo-engineer-id",
               email: "engineer@buildme.demo",
               name: "Demo Engineer",
               role: "engineer",
@@ -45,7 +46,7 @@ export const authOptions: NextAuthOptions = {
           }
           if (credentials.email === "rkumar@buildme.demo" && credentials.password === "demo1234") {
             return {
-              id: "cmufphvz60001ollg5ow8fn9k",
+              id: "demo-homeowner-id",
               email: "rkumar@buildme.demo",
               name: "R. Kumar",
               role: "homeowner",
@@ -58,7 +59,7 @@ export const authOptions: NextAuthOptions = {
           // Demo fallback if database is unseeded on cold start
           if ((credentials.email === "engineer@buildme.demo" || credentials.email === "engineer@demo.com") && credentials.password === "demo1234") {
             return {
-              id: "cmufphvyx0000ollgv1gox1hi",
+              id: "demo-engineer-id",
               email: "engineer@buildme.demo",
               name: "Demo Engineer",
               role: "engineer",
@@ -66,7 +67,7 @@ export const authOptions: NextAuthOptions = {
           }
           if (credentials.email === "rkumar@buildme.demo" && credentials.password === "demo1234") {
             return {
-              id: "cmufphvz60001ollg5ow8fn9k",
+              id: "demo-homeowner-id",
               email: "rkumar@buildme.demo",
               name: "R. Kumar",
               role: "homeowner",
