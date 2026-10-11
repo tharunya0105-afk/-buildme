@@ -331,10 +331,24 @@ export default function DeckPage() {
             ))}
           </tbody>
         </table>
-        <p className="mt-4 text-body text-text-secondary">
-          The layer that makes the WhatsApp chaos auditable — for the buyer no one
-          else serves: the independent engineer&apos;s commercial workflow.
-        </p>
+        <div className="mt-3 grid grid-cols-2 gap-2 rounded-lg border border-border bg-surface-alt p-3 text-[11px]">
+          <div>
+            <span className="font-semibold text-accent">Ground Reality Defenses (Startup TN / EIR Stress-Test):</span>
+            <ul className="mt-1 space-y-0.5 text-text-secondary">
+              <li>· <strong>Fast-Pay Incentive:</strong> Contractors adopt BuildMe to unlock 24-hr milestone payouts.</li>
+              <li>· <strong>Fast-Pour Fallback:</strong> Rebound hammer NDT &amp; transit slips override missed 6 AM photos.</li>
+              <li>· <strong>Pass-Through Billing:</strong> Engineers bill client ₹2,500/mo, pocketing ₹1,000 margin.</li>
+            </ul>
+          </div>
+          <div>
+            <span className="font-semibold text-accent">Structural &amp; Market Moats:</span>
+            <ul className="mt-1 space-y-0.5 text-text-secondary">
+              <li>· <strong>40% Cash Decoupled:</strong> Tracks physical kg/cu.ft without exposing tax books.</li>
+              <li>· <strong>TN Spot Rates:</strong> Calibrates real dealer rates in Coimbatore, Trichy, Salem.</li>
+              <li>· <strong>Zero Paid CAC:</strong> Physical site QR badges + 99acres pre-purchase backlink inbound.</li>
+            </ul>
+          </div>
+        </div>
       </Slide>
 
       {/* Slide 9 — Traction + product */}

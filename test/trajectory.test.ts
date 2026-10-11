@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   fitTrajectoryWithDualPassCheck,
+  applyEngineerOverride,
   DEFAULT_TRAJECTORY_CONFIG,
   type StageObservation,
 } from "../src/lib/stage-graph/trajectory";
@@ -78,5 +79,29 @@ test("Track 2 Trajectory HMM Engine", async (t) => {
     );
 
     assert.equal(result.abstained, true);
+  });
+
+  await t.test("unblocks abstained progression with certified engineer override", () => {
+    const { result } = fitTrajectoryWithDualPassCheck(
+      "column",
+      "elem-col-fast-pour",
+      [],
+      DEFAULT_TRAJECTORY_CONFIG
+    );
+
+    assert.equal(result.abstained, true);
+
+    // Apply licensed engineer physical rebound hammer test override
+    const unblocked = applyEngineerOverride(result, {
+      stageId: "column_cured",
+      engineerId: "eng_coimbatore_1",
+      verificationMethod: "rebound_hammer_ndt",
+      notes: "Post-pour Schmidt rebound hammer test recorded 32 MPa compressive strength. Transit slip verified.",
+      timestamp: new Date().toISOString(),
+    });
+
+    assert.equal(unblocked.abstained, false);
+    assert.equal(unblocked.currentStage?.stageId, "column_cured");
+    assert.ok(unblocked.trajectoryConfidence >= 0.85);
   });
 });

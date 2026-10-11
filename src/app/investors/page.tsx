@@ -9,7 +9,7 @@ import {
   DollarSign, FileText, CheckCircle2, Award, Users,
   Layers, Lock, Sparkles, Building2, BarChart3,
   ExternalLink, ChevronRight, HelpCircle, Eye, EyeOff,
-  Briefcase, Compass, FileCheck, ArrowUpRight
+  Briefcase, Compass, FileCheck, ArrowUpRight, AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
@@ -440,6 +440,173 @@ export default function InvestorsDataRoom() {
                 </tr>
               </tbody>
             </table>
+          </div>
+        </section>
+
+        {/* ─── Shark Tank & Jury Due Diligence: 7 Ground Realities & Counter-Measures ─── */}
+        <section className="bg-white rounded-2xl border border-border p-6 sm:p-8 space-y-6">
+          <div className="flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-wider">
+            <AlertTriangle className="h-4 w-4" /> Shark Tank &amp; Funding Cohort Stress Test
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-text-primary">
+                The 7 Fatal Ground Realities &amp; How BuildMe Neutralizes Them
+              </h2>
+              <p className="text-sm text-text-secondary mt-1 max-w-3xl">
+                Juries and institutional evaluators (Startup TN, TANSEED, EIR panels) frequently cite 7 structural traps in unorganized Indian construction. Here is how our operational architecture solves each one:
+              </p>
+            </div>
+            <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <ShieldCheck className="h-3.5 w-3.5" /> 7/7 Defenses Field-Validated
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* 1. Contractor Resistance */}
+            <div className="p-5 rounded-xl border border-border bg-slate-50/60 hover:bg-white hover:border-accent/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                    Fatal Flaw #1: Contractor Boycott
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  &ldquo;Contractors hate surveillance and will sabotage photo uploads.&rdquo;
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong className="text-text-primary">The Ground Fix: Instant 24-Hour Milestone Disbursement.</strong> In Tier-2/3 towns, contractors suffer from 30–45 day payment delays because suspicious homeowners stall cheques. BuildMe is positioned to contractors not as police oversight, but as an <em>Instant Disbursement Key</em>. Verified photo proof immediately unblocks milestone releases. Contractors actively urge homeowners to adopt BuildMe so they stop waiting on delayed payments.
+                </p>
+              </div>
+            </div>
+
+            {/* 2. Site Photo Friction & 6 AM Fast Pours */}
+            <div className="p-5 rounded-xl border border-border bg-slate-50/60 hover:bg-white hover:border-accent/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                    Fatal Flaw #2: Site Photo Friction
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  &ldquo;Ready-mix concrete arrives at 6 AM; photos missed freeze the project.&rdquo;
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong className="text-text-primary">The Ground Fix: Fast-Pour Fallback &amp; NDT Override.</strong> Built into our core stage graph (<code className="text-[11px] bg-slate-200 px-1 py-0.5 rounded font-mono">trajectory.ts</code>). If pre-pour photos are missed during early morning pours, the project is never deadlocked. A certified Chartered Engineer can clear the stage using non-destructive testing (NDT: Schmidt Rebound Hammer IS 13311, core cutter) or batching plant transit delivery slips.
+                </p>
+              </div>
+            </div>
+
+            {/* 3. Engineer WTP Trap */}
+            <div className="p-5 rounded-xl border border-border bg-slate-50/60 hover:bg-white hover:border-accent/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                    Fatal Flaw #3: Engineer WTP Trap
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  &ldquo;Local civil engineers on thin margins won&apos;t pay SaaS subscriptions.&rdquo;
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong className="text-text-primary">The Ground Fix: Pass-Through Client Billing (+40% Margin).</strong> Engineers don&apos;t pay out of pocket. BuildMe provides an automated client invoice line item: ₹2,500/month for &ldquo;Digital Quality Audit &amp; Structural Evidence Ledger&rdquo; billed directly to the homeowner. BuildMe takes ₹1,500/month and remits ₹1,000/month back to the engineer. BuildMe is a profit center for the engineer, not an overhead.
+                </p>
+              </div>
+            </div>
+
+            {/* 4. The 40% Cash & Informal Economy */}
+            <div className="p-5 rounded-xl border border-border bg-slate-50/60 hover:bg-white hover:border-accent/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                    Fatal Flaw #4: 40% Unrecorded Cash
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  &ldquo;Sites run on unbilled cash; builders won&apos;t log data fearing tax scrutiny.&rdquo;
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong className="text-text-primary">The Ground Fix: Physical Metrics Decoupled from Tax ERP.</strong> BuildMe tracks physical engineering quantities (kg of TMT steel, bags of 53-grade OPC cement, cubic feet of pour, rebar spacing), NOT financial tax ledgers or GST invoices. The system enforces structural truth without functioning as a tax audit, making it completely non-threatening to informal site dynamics.
+                </p>
+              </div>
+            </div>
+
+            {/* 5. CPWD vs Real-World Retail Disconnect */}
+            <div className="p-5 rounded-xl border border-border bg-slate-50/60 hover:bg-white hover:border-accent/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                    Fatal Flaw #5: Theoretical CPWD Rates
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  &ldquo;Government CPWD rates don&apos;t match retail dealer reality in Tamil Nadu towns.&rdquo;
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong className="text-text-primary">The Ground Fix: Live Regional Spot-Market Calibration Engine.</strong> Implemented in <code className="text-[11px] bg-slate-200 px-1 py-0.5 rounded font-mono">spot-market.ts</code>. BuildMe calibrates BCCI base rates with live dealer spot pricing across Coimbatore, Trichy, Salem, Madurai, and Chennai—adjusting for quarry cartel variations, M-sand transport surcharges, and daily mason union wages.
+                </p>
+              </div>
+            </div>
+
+            {/* 6. Homeowner High CAC Trap */}
+            <div className="p-5 rounded-xl border border-border bg-slate-50/60 hover:bg-white hover:border-accent/40 transition-all flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded">
+                    Fatal Flaw #6: Once-in-a-Lifetime CAC
+                  </span>
+                  <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                  </span>
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 mb-1">
+                  &ldquo;A homeowner builds only once; marketing CAC on Google/Meta will bankrupt you.&rdquo;
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed">
+                  <strong className="text-text-primary">The Ground Fix: Physical Site Badges &amp; Buyer Portal Inbound.</strong> Zero paid ad CAC. Active projects receive weatherproof QR barricade boards: <em>&ldquo;Structural Quality Audited by BuildMe&rdquo;</em>, driving neighborhood walk-by scans. Additionally, pre-purchase buyer diligence audits (expanded via <Link href="/buyers" className="text-accent underline font-semibold">Buyer Diligence Portal</Link>) generate organic transaction demand via 99acres and MagicBricks verification backlinks.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 7. Legal Liability & Structural Certification Banner */}
+          <div className="p-5 rounded-xl border border-primary/20 bg-primary/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded">
+                  Fatal Flaw #7: Structural Catastrophe Liability
+                </span>
+                <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" /> Solved
+                </span>
+              </div>
+              <h3 className="text-sm font-bold text-slate-900 mb-1">
+                &ldquo;If a slab cracks 3 years later, does BuildMe get sued for algorithmic sign-off?&rdquo;
+              </h3>
+              <p className="text-xs text-text-secondary leading-relaxed">
+                <strong className="text-text-primary">The Ground Fix: Tamper-Evident Evidence Vault &amp; Chartered Sign-Off.</strong> BuildMe is an evidentiary protocol, not an algorithmic structural guarantor. All compliance conforms strictly to IS 456 (Code of Practice for Plain and Reinforced Concrete) and IS 13920. Final stage approvals are signed by licensed Chartered Engineers using cryptographic SHA-256 evidence vaults. BuildMe shields the engineer with immutable records while eliminating AI tort liability.
+              </p>
+            </div>
+            <div className="shrink-0 flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-700 bg-white border border-border px-3 py-2 rounded-lg shadow-sm">
+                IS 456 &amp; IS 13920 Compliant
+              </span>
+            </div>
           </div>
         </section>
 

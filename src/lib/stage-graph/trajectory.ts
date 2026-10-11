@@ -517,3 +517,42 @@ export function fitTrajectoryWithDualPassCheck(
     resultA.trajectoryConfidence >= resultB.trajectoryConfidence ? resultA : resultB;
   return { result, dualPassAgreed: false };
 }
+
+// ─── Operational Fallback for Rapid Site Pours ─────────────────────────────
+
+export interface EngineerStageOverride {
+  stageId: string;
+  engineerId: string;
+  verificationMethod: "rebound_hammer_ndt" | "batching_plant_transit_slip" | "licensed_engineer_signoff" | "core_compressive_test";
+  notes: string;
+  timestamp: string;
+}
+
+/**
+ * Solves the ground-reality problem: When a fast pour occurs at 6 AM
+ * without pre-pour photos, an engineer can record a certified physical
+ * fallback test so the project trajectory does not stall in abstention.
+ */
+export function applyEngineerOverride(
+  result: TrajectoryResult,
+  override: EngineerStageOverride
+): TrajectoryResult {
+  const stages = getStagesForElement(result.elementType);
+  const targetStage = stages.find((s) => s.id === override.stageId) || stages[stages.length - 1];
+
+  return {
+    ...result,
+    abstained: false,
+    abstentionReason: undefined,
+    currentStage: {
+      stageId: targetStage.id,
+      stageLabel: targetStage.label,
+      status: "observed",
+      observability: targetStage.observability,
+      maxObservedProbability: 0.95,
+      supportingPhotoIds: [`override_${override.verificationMethod}_${Date.now()}`],
+      firstObservedAt: override.timestamp,
+    },
+    trajectoryConfidence: 0.9,
+  };
+}
