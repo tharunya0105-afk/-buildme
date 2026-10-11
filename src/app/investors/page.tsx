@@ -376,6 +376,27 @@ export default function InvestorsDataRoom() {
             </div>
           </div>
 
+          {/* Secondary Market Expansion: Home Buyers & Carfax Moat */}
+          <div className="bg-gradient-to-r from-slate-900 to-primary text-white p-6 rounded-xl border border-border shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-accent text-white px-2 py-0.5 rounded">
+                Product & TAM Expansion
+              </span>
+              <h3 className="text-lg font-bold mt-1.5 text-white">
+                From Building Homes to Buying Homes: The Pre-Purchase Diligence Flywheel
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                Home buyers face the ultimate information asymmetry: all structural faults and water leaks are concealed behind fresh paint. BuildMe empowers certified civil engineers to conduct 7-point pre-purchase due diligence (₹4,999–₹9,999/audit), expanding addressable transaction flow by 3x.
+              </p>
+            </div>
+            <Link
+              href="/buyers"
+              className="btn-premium btn-accent px-5 py-2.5 text-xs font-bold whitespace-nowrap shrink-0 flex items-center gap-1 shadow-md"
+            >
+              View Buyer Diligence Portal →
+            </Link>
+          </div>
+
           {/* Competitor comparison */}
           <div className="overflow-x-auto bg-white rounded-xl border border-border">
             <table className="w-full text-left text-sm">

@@ -4,7 +4,7 @@ import {
   Camera, TrendingUp, CheckCircle, Zap,
   MapPin, CreditCard, ChevronRight, Shield,
   Users, TrendingDown, Clock, AlertTriangle,
-  Compass, Briefcase, Sparkles,
+  Compass, Briefcase, Sparkles, Building2,
 } from "lucide-react";
 
 const features = [
@@ -172,11 +172,14 @@ export default function LandingPage() {
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-6 text-sm font-medium text-text-secondary">
+            <Link href="/buyers" className="text-primary font-semibold flex items-center gap-1 hover:text-accent transition-colors">
+              For Home Buyers <span className="text-[10px] px-1.5 py-0.2 bg-accent/10 text-accent font-bold rounded-full">New</span>
+            </Link>
             <Link href="/investors" className="text-accent font-semibold flex items-center gap-1 hover:text-accent-dark transition-colors">
               Investor Room <span className="text-[10px] px-1.5 py-0.2 bg-accent/10 rounded-full border border-accent/20">Data Room</span>
             </Link>
             <Link href="/deck" className="hover:text-text-primary transition-colors">Pitch Deck</Link>
-            <a href="#problem" className="hover:text-text-primary transition-colors">The Problem</a>
+            <a href="#buyers" className="hover:text-text-primary transition-colors">Buying vs Building</a>
             <a href="#solution" className="hover:text-text-primary transition-colors">Platform</a>
             <a href="#market" className="hover:text-text-primary transition-colors">Market & Scale</a>
             <a href="#roadmap" className="hover:text-text-primary transition-colors">90-Day Plan</a>
@@ -232,6 +235,19 @@ export default function LandingPage() {
             <p className="mt-4 text-body text-text-muted leading-relaxed max-w-2xl">
               Zero 3D BIM models required. Zero manual paperwork. Built on a proprietary temporal Viterbi DAG that solves physical concealment tracking for residential builds.
             </p>
+
+            {/* Dual persona switch: Builders vs Buyers */}
+            <div className="mt-6 flex flex-wrap gap-2 p-1.5 bg-slate-100 rounded-xl max-w-lg border border-border">
+              <div className="flex-1 py-1.5 px-3 rounded-lg bg-white shadow-sm text-xs font-bold text-text-primary text-center">
+                🏗️ Building a House (Truth Engine)
+              </div>
+              <Link
+                href="/buyers"
+                className="flex-1 py-1.5 px-3 rounded-lg hover:bg-white text-xs font-semibold text-text-secondary hover:text-accent transition-all text-center flex items-center justify-center gap-1.5"
+              >
+                🏠 Buying a House? (Due Diligence) <span className="text-[10px] bg-accent text-white px-1.5 py-0.2 rounded-full font-bold">New</span>
+              </Link>
+            </div>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <a href="#demo" className="btn-premium btn-accent px-7 py-3 text-base shadow-md">
@@ -321,6 +337,68 @@ export default function LandingPage() {
                 <p className="text-micro text-text-muted mt-0.5">{stat.sublabel}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── SECTION 0: BUYING VS BUILDING DUALITY ──────────────────────────── */}
+      <section id="buyers" className="border-b border-border bg-gradient-to-r from-slate-900 via-primary to-slate-900 text-white py-16 scroll-mt-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mb-10">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-accent text-white px-2.5 py-1 rounded">
+                The Complete Home Lifecycle
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-bold mt-2 tracking-tight">
+                Two sides of the truth: People who build vs. People who buy
+              </h2>
+              <p className="text-sm text-slate-300 mt-1 max-w-2xl">
+                Civil engineers use BuildMe during construction to prove every rupee. Home buyers use BuildMe before purchasing to uncover what sellers painted over.
+              </p>
+            </div>
+            <Link
+              href="/buyers"
+              className="btn-premium btn-accent px-6 py-2.5 text-xs font-bold shrink-0 flex items-center gap-1.5 shadow-md"
+            >
+              Explore Home Buyer Portal <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-accent-light uppercase tracking-wider">Track 1 · Home Construction</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-white/20 text-white font-medium">For Builders & Engineers</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">For People Building Houses</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Eliminate the 40% contractor BOQ variance. Verify structural progress from foundation to handover using physical site photos, CPWD/BCCI cost indices, and milestone-linked payment releases.
+              </p>
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/90 font-medium">
+                <span>✓ 16 TN BCCI Regional Centres</span>
+                <a href="#solution" className="text-accent-light hover:underline font-semibold flex items-center gap-1">
+                  See Architecture →
+                </a>
+              </div>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-accent/40 space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-accent/20 rounded-full blur-xl pointer-events-none" />
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-accent uppercase tracking-wider">Track 2 · Pre-Purchase Audit</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-accent text-white font-bold">For Home & Flat Buyers</span>
+              </div>
+              <h3 className="text-xl font-bold text-white">For People Buying Houses & Flats</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Never buy blind. Certified civil engineers run a 7-point due diligence audit on apartments, villas, and resale homes — surfacing concealed cracks, dampness, and unauthorized setback violations.
+              </p>
+              <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-white/90 font-medium">
+                <span>✓ Property Health Score (0-100)</span>
+                <Link href="/buyers" className="text-accent hover:underline font-semibold flex items-center gap-1">
+                  Launch Buyer Audit →
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

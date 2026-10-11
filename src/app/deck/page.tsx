@@ -238,6 +238,7 @@ export default function DeckPage() {
                 ["Independent engineers, western TN", "~500 (relationship network)"],
                 ["Near-term SOM", "₹60L–1.2 Cr ARR"],
                 ["South-India expansion (5,000 engineers)", "₹6–12 Cr ARR"],
+                ["Home Buyer Due Diligence Expansion", "₹4,999–9,999 / pre-purchase audit (expands addressable market to ₹18L Cr)"],
               ].map(([k, v], i) => (
                 <tr key={k} className={i % 2 === 0 ? "bg-surface-alt" : ""}>
                   <td className="border-b border-border px-4 py-2.5">{k}</td>
@@ -293,9 +294,7 @@ export default function DeckPage() {
           </div>
           <div className="col-span-3 rounded-lg border border-border bg-surface-alt p-4">
             <p className="text-caption text-text-secondary">
-              <strong className="text-text-primary">Honest moat posture:</strong> the
-              BCCI/CPWD indices are public — any competitor can download them
-              tomorrow. They are a feature, not the moat. The corpus is.
+              <strong className="text-text-primary">The Carfax Flywheel:</strong> Houses built on BuildMe carry an immutable structural health ledger. When sold 5–10 years later, buyers require the BuildMe passport for pre-purchase diligence.
             </p>
           </div>
         </div>
