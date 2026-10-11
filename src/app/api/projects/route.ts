@@ -12,11 +12,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    let userId = (session.user as any).id;
-    const role = (session.user as any).role;
+    let userId = session.user.id;
+    const role = session.user.role;
 
-    if (userId === "demo-engineer-id") userId = "cmufphvyx0000ollgv1gox1hi";
-    if (userId === "demo-homeowner-id") userId = "cmufphvz60001ollg5ow8fn9k";
+    if (userId === "demo-engineer-id") {
+      const demoUser = await db.user.findFirst({ where: { role: "engineer" } });
+      if (demoUser) userId = demoUser.id;
+    }
+    if (userId === "demo-homeowner-id") {
+      const demoUser = await db.user.findFirst({ where: { role: "homeowner" } });
+      if (demoUser) userId = demoUser.id;
+    }
 
     let projects = await db.project.findMany({
       where: role === "engineer" ? { engineerId: userId } : { homeownerId: userId },
@@ -94,7 +100,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const role = (session.user as any).role;
+    const role = session.user.role;
 
     if (role !== "engineer") {
       return NextResponse.json(
@@ -103,7 +109,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await req.json();
 
     const {

@@ -12,15 +12,15 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "homeowner") {
+    if (session.user.role !== "homeowner") {
       return NextResponse.json({ error: "Only homeowners can report concerns" }, { status: 403 });
     }
 
-    const homeownerId = (session.user as any).id;
+    const homeownerId = session.user.id;
     const body = await request.json();
     const { projectId, category, title, description, severity } = body;
 
@@ -115,15 +115,15 @@ export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "homeowner") {
+    if (session.user.role !== "homeowner") {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    const homeownerId = (session.user as any).id;
+    const homeownerId = session.user.id;
 
     // Find the homeowner's assigned project
     const project = await db.project.findFirst({

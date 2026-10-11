@@ -11,14 +11,14 @@ import { db } from "@/lib/db";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can access workforce summary" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const engineerId = session.user.id;
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
 
@@ -114,6 +114,27 @@ export async function GET(request: NextRequest) {
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
+    // Batch fetch all check-ins across all projects in one single query
+    const projectIds = projects.map((p) => p.id);
+    const allTodayCheckIns = await db.workerCheckIn.findMany({
+      where: {
+        projectId: { in: projectIds },
+        checkInTime: { gte: today, lt: tomorrow },
+      },
+      include: {
+        worker: { select: { id: true } },
+      },
+      orderBy: { checkInTime: "desc" },
+    });
+
+    // Group check-ins by projectId in memory
+    const checkInsByProject = new Map<string, typeof allTodayCheckIns>();
+    for (const ci of allTodayCheckIns) {
+      const list = checkInsByProject.get(ci.projectId) || [];
+      list.push(ci);
+      checkInsByProject.set(ci.projectId, list);
+    }
+
     const summaries: any[] = [];
 
     for (const project of projects) {
@@ -133,16 +154,7 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      const todayCheckIns = await db.workerCheckIn.findMany({
-        where: {
-          projectId: project.id,
-          checkInTime: { gte: today, lt: tomorrow },
-        },
-        include: {
-          worker: { select: { id: true } },
-        },
-        orderBy: { checkInTime: "desc" },
-      });
+      const todayCheckIns = checkInsByProject.get(project.id) || [];
 
       const latestCheckIns = new Map<string, string>();
       for (const ci of todayCheckIns) {

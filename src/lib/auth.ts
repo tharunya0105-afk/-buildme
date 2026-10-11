@@ -35,45 +35,11 @@ export const authOptions: NextAuthOptions = {
           });
         } catch (dbErr: any) {
           console.error("[auth] Database query error:", dbErr);
-          // Demo fallback in case of transient database initialization
-          if ((credentials.email === "engineer@buildme.demo" || credentials.email === "engineer@demo.com") && credentials.password === "demo1234") {
-            return {
-              id: "demo-engineer-id",
-              email: "engineer@buildme.demo",
-              name: "Demo Engineer",
-              role: "engineer",
-            };
-          }
-          if (credentials.email === "rkumar@buildme.demo" && credentials.password === "demo1234") {
-            return {
-              id: "demo-homeowner-id",
-              email: "rkumar@buildme.demo",
-              name: "R. Kumar",
-              role: "homeowner",
-            };
-          }
           throw new Error(`Database error: ${dbErr?.message || "Failed to query database"}`);
         }
 
         if (!user) {
-          // Demo fallback if database is unseeded on cold start
-          if ((credentials.email === "engineer@buildme.demo" || credentials.email === "engineer@demo.com") && credentials.password === "demo1234") {
-            return {
-              id: "demo-engineer-id",
-              email: "engineer@buildme.demo",
-              name: "Demo Engineer",
-              role: "engineer",
-            };
-          }
-          if (credentials.email === "rkumar@buildme.demo" && credentials.password === "demo1234") {
-            return {
-              id: "demo-homeowner-id",
-              email: "rkumar@buildme.demo",
-              name: "R. Kumar",
-              role: "homeowner",
-            };
-          }
-          throw new Error("No account found with this email");
+          throw new Error("No account found with this email. Please verify your credentials.");
         }
 
         const isValid = await bcrypt.compare(
@@ -82,18 +48,6 @@ export const authOptions: NextAuthOptions = {
         );
 
         if (!isValid) {
-          // Check if it's the demo account using default demo password
-          if (
-            (user.email === "engineer@buildme.demo" || user.email === "rkumar@buildme.demo" || user.email === "engineer@demo.com") &&
-            credentials.password === "demo1234"
-          ) {
-            return {
-              id: user.id,
-              email: user.email,
-              name: user.name,
-              role: user.role,
-            };
-          }
           throw new Error("Invalid password");
         }
 
@@ -112,15 +66,15 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        token.role = user.role;
         token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
+        session.user.role = token.role;
+        session.user.id = token.id;
       }
       return session;
     },
@@ -129,5 +83,10 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/login",
     error: "/auth/login",
   },
-  secret: process.env.NEXTAUTH_SECRET || "buildme-local-development-secret-change-in-production",
+  secret: (() => {
+    if (process.env.NODE_ENV === "production" && !process.env.NEXTAUTH_SECRET) {
+      throw new Error("FATAL: NEXTAUTH_SECRET environment variable must be set in production");
+    }
+    return process.env.NEXTAUTH_SECRET || "buildme-local-development-secret-change-in-production";
+  })(),
 };

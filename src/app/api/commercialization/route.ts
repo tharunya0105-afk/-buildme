@@ -10,10 +10,10 @@ import { db } from "@/lib/db";
 export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const [discoveries, pricingExperiments, valueExperiments] = await Promise.all([
       db.customerDiscovery.findMany({
@@ -96,10 +96,10 @@ export async function GET(_request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await request.json();
 
     const discovery = await db.customerDiscovery.create({
@@ -147,10 +147,10 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await request.json();
 
     if (!body.id) {

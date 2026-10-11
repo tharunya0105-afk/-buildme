@@ -16,10 +16,10 @@ import { db } from "@/lib/db";
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = (session.user as any).id as string;
+    const userId = session.user.id as string;
 
     const { searchParams } = new URL(req.url);
     const format = searchParams.get("format") || "json"; // "json" | "csv"

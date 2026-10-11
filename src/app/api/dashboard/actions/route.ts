@@ -23,15 +23,15 @@ export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can access actions" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const engineerId = session.user.id;
     const actions: ActionItem[] = [];
 
     const projects = await db.project.findMany({

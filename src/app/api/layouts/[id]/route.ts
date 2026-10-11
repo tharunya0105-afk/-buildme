@@ -13,10 +13,10 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const { id } = await params;
     const plan = await db.layoutPlan.findUnique({
@@ -52,10 +52,10 @@ export async function PATCH(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const { id } = await params;
     const plan = await db.layoutPlan.findUnique({
@@ -132,10 +132,10 @@ export async function DELETE(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const { id } = await params;
     const plan = await db.layoutPlan.findUnique({

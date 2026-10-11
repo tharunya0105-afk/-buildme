@@ -11,14 +11,14 @@ import { db } from "@/lib/db";
 export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can access actions" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const engineerId = session.user.id;
 
     // Get existing open/in-progress actions
     const existingActions = await db.actionItem.findMany({
@@ -124,14 +124,14 @@ export async function GET(_request: NextRequest) {
 export async function POST(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can generate actions" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const engineerId = session.user.id;
     const now = new Date();
 
     // Fetch all projects with relevant data

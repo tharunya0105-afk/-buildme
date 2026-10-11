@@ -62,3 +62,11 @@ demo_videos/
 
 # Python dev/capture/record scripts
 scripts/*.py
+*.py
+*.csv
+*.pdf
+_archive/
+.vercel-trigger
+start-server.ps1
+start.js
+

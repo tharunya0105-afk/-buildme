@@ -11,15 +11,15 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const engineerId = session.user.id;
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit") || "5", 10);
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { createIssueSchema, parseBody } from "@/lib/validation";
 
 /**
  * GET /api/issues?projectId=xxx
@@ -10,12 +11,12 @@ import { db } from "@/lib/db";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
-    const role = (session.user as any).role;
+    const userId = session.user.id;
+    const role = session.user.role;
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
 
@@ -70,17 +71,18 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await request.json();
-    const { projectId, title, description, category, severity } = body;
-
-    if (!projectId || !title?.trim()) {
-      return NextResponse.json({ error: "projectId and title are required" }, { status: 400 });
+    const { data, error } = parseBody(createIssueSchema, body);
+    if (error) {
+      return error;
     }
+
+    const { projectId, title, description, category, severity } = data;
 
     // Verify project ownership
     const project = await db.project.findUnique({ where: { id: projectId } });

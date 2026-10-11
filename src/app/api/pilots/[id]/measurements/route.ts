@@ -13,15 +13,15 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can add measurements" }, { status: 403 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const { id: pilotId } = await context.params;
     const body = await request.json();
 
@@ -69,7 +69,7 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 

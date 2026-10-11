@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
+import { applyRateLimit } from "@/lib/rate-limit";
+
 // POST /api/upload - Upload a photo
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +16,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const role = (session.user as any).role;
+    const rateLimitResponse = applyRateLimit(session, "upload");
+    if (rateLimitResponse) return rateLimitResponse;
+
+    const role = session.user.role;
 
     if (role !== "engineer") {
       return NextResponse.json(
@@ -23,7 +28,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const formData = await req.formData();
     const file = formData.get("file") as File | null;

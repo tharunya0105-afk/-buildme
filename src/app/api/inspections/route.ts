@@ -12,8 +12,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
-    const role = (session.user as any).role;
+    const userId = session.user.id;
+    const role = session.user.role;
     const { searchParams } = new URL(req.url);
     const projectId = searchParams.get("projectId");
     const limit = parseInt(searchParams.get("limit") || "50");
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const role = (session.user as any).role;
+    const role = session.user.role;
 
     if (role !== "engineer") {
       return NextResponse.json(
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await req.json();
     const { projectId, stage, notes, inspectionDate } = body;
 

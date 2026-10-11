@@ -11,15 +11,15 @@ import { db } from "@/lib/db";
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "homeowner") {
+    if (session.user.role !== "homeowner") {
       return NextResponse.json({ error: "Only homeowners can submit this feedback" }, { status: 403 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const body = await request.json();
     const { projectId, responses, rating, whatWorked, whatDifficult, wouldUseAgain, comments } = body;
 
@@ -92,11 +92,11 @@ export async function POST(request: NextRequest) {
 export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const feedback = await db.productFeedback.findMany({
       where: { userId, source: "homeowner_survey" },
       orderBy: { createdAt: "desc" },

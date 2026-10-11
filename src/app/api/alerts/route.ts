@@ -12,8 +12,8 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
-    const role = (session.user as any).role;
+    const userId = session.user.id;
+    const role = session.user.role;
     const { searchParams } = new URL(req.url);
     const projectId = searchParams.get("projectId");
     const resolved = searchParams.get("resolved");

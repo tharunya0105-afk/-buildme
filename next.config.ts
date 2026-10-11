@@ -11,9 +11,9 @@ const nextConfig: NextConfig = {
   },
   // Allow large file uploads
   serverExternalPackages: ["bcryptjs"],
-  // Skip TypeScript errors during build (fix for Vercel deployment)
+  // Enforce strict TypeScript checking during build
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   // Ensure the SQLite database file is bundled into serverless functions on Vercel
   outputFileTracingIncludes: {

@@ -23,10 +23,10 @@ export async function GET(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = (session.user as any).id as string;
+    const userId = session.user.id as string;
 
     const { id: projectId } = await params;
 
@@ -146,10 +146,10 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = (session.user as any).id as string;
+    const userId = session.user.id as string;
 
     const { id: projectId } = await params;
     const body = await req.json();
@@ -240,10 +240,10 @@ export async function PATCH(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const userId = (session.user as any).id as string;
+    const userId = session.user.id as string;
 
     const { id: projectId } = await params;
     const body = await req.json();

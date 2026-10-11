@@ -13,11 +13,11 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
     const { id: issueId } = await params;
     const body = await request.json();
     const { type, description, photoId, trustLabel } = body;
@@ -37,7 +37,7 @@ export async function POST(
     }
 
     // Verify access
-    const role = (session.user as any).role;
+    const role = session.user.role;
     if (role === "engineer" && issue.project.engineerId !== userId) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
     }

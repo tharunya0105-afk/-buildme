@@ -44,6 +44,8 @@ function determineVerificationStatus(
   return "outside_geofence";
 }
 
+import { applyRateLimit } from "@/lib/rate-limit";
+
 /**
  * POST /api/workforce/checkins
  * Create a worker check-in with server-side geofence verification.
@@ -52,16 +54,19 @@ function determineVerificationStatus(
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can record check-ins" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const rateLimitResponse = applyRateLimit(session, "default");
+    if (rateLimitResponse) return rateLimitResponse;
+
+    const engineerId = session.user.id;
     const body = await request.json();
-    const { workerId, latitude, longitude, accuracy, notes, geofenceRadius } = body;
+    const { workerId, latitude, longitude, accuracy, notes, geofenceRadius, timestamp } = body;
 
     // Validate inputs
     if (!workerId) {
@@ -75,6 +80,18 @@ export async function POST(request: NextRequest) {
     }
     if (accuracy !== undefined && accuracy !== null && (typeof accuracy !== "number" || accuracy < 0)) {
       return NextResponse.json({ error: "Invalid accuracy value" }, { status: 400 });
+    }
+
+    // GPS freshness verification: prevent pre-recorded coordinates / replay attacks
+    if (timestamp) {
+      const clientTime = new Date(timestamp).getTime();
+      const now = Date.now();
+      if (isNaN(clientTime) || clientTime < now - 300_000 || clientTime > now + 60_000) {
+        return NextResponse.json(
+          { error: "Stale or invalid GPS timestamp. Check-in must be captured live on site." },
+          { status: 400 }
+        );
+      }
     }
 
     // Find worker and verify ownership through project
@@ -207,14 +224,14 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can view check-ins" }, { status: 403 });
     }
 
-    const engineerId = (session.user as any).id;
+    const engineerId = session.user.id;
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get("projectId");
     const dateStr = searchParams.get("date"); // optional: YYYY-MM-DD

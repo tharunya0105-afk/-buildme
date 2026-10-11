@@ -13,16 +13,19 @@ export async function GET(_request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
-    if ((session.user as any).role !== "engineer") {
+    if (session.user.role !== "engineer") {
       return NextResponse.json({ error: "Only engineers can access dashboard" }, { status: 403 });
     }
 
-    let engineerId = (session.user as any).id;
-    if (engineerId === "demo-engineer-id") engineerId = "cmufphvyx0000ollgv1gox1hi";
+    let engineerId = session.user.id;
+    if (engineerId === "demo-engineer-id") {
+      const demoUser = await db.user.findFirst({ where: { role: "engineer" } });
+      if (demoUser) engineerId = demoUser.id;
+    }
 
     // Fetch all projects for this engineer with related data
     let projects = await db.project.findMany({

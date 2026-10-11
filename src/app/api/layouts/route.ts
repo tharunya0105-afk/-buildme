@@ -12,10 +12,10 @@ import path from "path";
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const projectId = req.nextUrl.searchParams.get("projectId");
     if (!projectId) {
@@ -54,10 +54,10 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user || !(session.user as any).id) {
+    if (!session?.user || !session.user.id) {
       return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
-    const userId = (session.user as any).id;
+    const userId = session.user.id;
 
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
